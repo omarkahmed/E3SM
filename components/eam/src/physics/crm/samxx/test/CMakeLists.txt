@@ -21,4 +21,6 @@ add_subdirectory(fortran3d)
 add_subdirectory(cpp2d)
 add_subdirectory(cpp3d)
 
+set_property(TARGET cpp2d PROPERTY LINKER_LANGUAGE Fortran)
+set_property(TARGET cpp3d PROPERTY LINKER_LANGUAGE Fortran)
 

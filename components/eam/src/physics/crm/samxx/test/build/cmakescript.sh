@@ -152,6 +152,7 @@ cmake                                      \
   -DYAKL_C_FLAGS="${YAKL_C_FLAGS}"         \
   -DYAKL_F90_FLAGS="${YAKL_F90_FLAGS}"     \
   -DYAKL_ARCH="${YAKL_ARCH}"               \
+  -DYAKL_SYCL_FLAGS="${YAKL_SYCL_FLAGS}"              \
   ..
 
 
