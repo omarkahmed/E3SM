@@ -248,6 +248,7 @@ program driver
            crm_clear_rh, &
            lat0, long0, gcolp, 2, &
            use_MMF_VT, MMF_VT_wn_max, &
+           logical(.false.,c_bool), &
            logical(.true.,c_bool) , 2._c_double , logical(.true.,c_bool) )
 
 
