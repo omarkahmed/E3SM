@@ -14,6 +14,11 @@ void timeloop() {
 
   nstep = 0;
 
+  float time_init, time_remainder;
+
+  time_init = 0.0;
+  time_remainder = 0.0;
+
   do {
     nstep = nstep + 1;
 
@@ -23,7 +28,10 @@ void timeloop() {
     //------------------------------------------------------------------
     kurant();
 
+    auto t1 = std::chrono::steady_clock::now();   // Start timing
+
     for(int icyc=1; icyc<=ncycle; icyc++) {
+
       icycle = icyc;
       dtn = dt/ncycle;
       parallel_for( 1 , YAKL_LAMBDA ( int i ) {
@@ -186,10 +194,27 @@ void timeloop() {
       na=nc;
       nc=nb;
       nb=nn;
+
     } // icycle
 
     post_icycle();
 
+    auto t2 = std::chrono::steady_clock::now();   // End timing
+
+    auto step_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+
+    if (nstep == 1) {
+	    time_init = (float)step_ms;
+    } else {
+	    time_remainder += (float)step_ms;
+    }
+
+    std::cout << "nstep: " << nstep << ", time (ms): " << step_ms << std::endl;
+    //std::cout << "nstep: " << nstep << ", time (ms): " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << std::endl;
+		    //.count());
+
   } while (nstep < nstop);
+  std::cout << "first time step (ms): " << time_init << std::endl;
+  std::cout << "remainder time step (ms): " << time_remainder << std::endl;
 
 }
