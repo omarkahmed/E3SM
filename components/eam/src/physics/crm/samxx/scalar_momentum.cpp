@@ -100,22 +100,29 @@ void scalar_momentum_pgf( real4d& scalar_wind, real4d& tend ) {
    ! pgf is diagnosed from w * d/dz(scalar_wind) using the poisson equation
    ! (see Wu and Yanai 1994)
    !------------------------------------------------------------------------*/
-
+    
+   parallel_for( Bounds<4>(nzm,ny,nx, ncrms) , YAKL_LAMBDA (int k, int j, int i, int icrm) {
+     w_hat(k, j, i, icrm) = w_i(k, j, i, icrm);
+   });
    //-----------------------------------------
    // compute forward fft of w
    //-----------------------------------------
-   yakl::RealFFT1D<nx> fftx;
-   fftx.init();
+   
+   yakl::RealFFT1D<real> fftx;
+   //yakl::RealFFT1D<nx> fftx;
+   //fftx.init();
 
    // for (int k=0; k<nzm; k++) {
    //   for (int j=0; j<ny; j++) {
    //     for (int icrm=0; icrm<ncrms; icrm++) {
-   parallel_for( SimpleBounds<3>(nzm,ny,ncrms) , YAKL_LAMBDA (int k, int j, int icrm) {
-      SArray<real,1,nx+2> ftmp;
-      for (int i=0; i<nx ; i++) { ftmp(i) = w_i(k,j,i,icrm); }
-      fftx.forward(ftmp, fftx.trig, yakl::FFT_SCALE_ECMWF);
-      for (int i=0; i<nx2; i++) { w_hat(k,j,i,icrm) = ftmp(i); }
-   });
+   fftx.init(w_hat, 2, nx);
+   fftx.forward_real(w_hat);
+   //parallel_for( SimpleBounds<3>(nzm,ny,ncrms) , YAKL_LAMBDA (int k, int j, int icrm) {
+   //   SArray<real,1,nx+2> ftmp;
+   //   for (int i=0; i<nx ; i++) { ftmp(i) = w_i(k,j,i,icrm); }
+   //   fftx.forward(ftmp, fftx.trig, yakl::FFT_SCALE_ECMWF);
+   //   for (int i=0; i<nx2; i++) { w_hat(k,j,i,icrm) = ftmp(i); }
+   //});
 
    //-----------------------------------------
    //-----------------------------------------
@@ -230,12 +237,15 @@ void scalar_momentum_pgf( real4d& scalar_wind, real4d& tend ) {
    // for (int k=0; k<nzm; k++) {
    //   for (int j=0; j<ny; j++) {
    //     for (int icrm=0; icrm<ncrms; icrm++) {
-   parallel_for( SimpleBounds<3>(nzm,ny,ncrms) , YAKL_LAMBDA (int k, int j, int icrm) {
-      SArray<real,1,nx+2> ftmp;
-      for (int i=0; i<nx2; i++) { ftmp(i) = pgf_hat(k,j,i,icrm); }
-      fftx.inverse(ftmp, fftx.trig, yakl::FFT_SCALE_ECMWF);
-      for (int i=0; i<nx ; i++) { pgf(k,j,i,icrm) = ftmp(i); }
-   });
+
+   fftx.init(pgf_hat, 2, nx);
+   fftx.inverse_real(pgf_hat);
+   //parallel_for( SimpleBounds<3>(nzm,ny,ncrms) , YAKL_LAMBDA (int k, int j, int icrm) {
+   //   SArray<real,1,nx+2> ftmp;
+   //   for (int i=0; i<nx2; i++) { ftmp(i) = pgf_hat(k,j,i,icrm); }
+   //   fftx.inverse(ftmp, fftx.trig, yakl::FFT_SCALE_ECMWF);
+   //   for (int i=0; i<nx ; i++) { pgf(k,j,i,icrm) = ftmp(i); }
+   //});
 
    //-----------------------------------------
    // Compute final tendency
@@ -248,7 +258,7 @@ void scalar_momentum_pgf( real4d& scalar_wind, real4d& tend ) {
       if (k == 0) {
          tend(k,j,i,icrm) = 0.0;
       } else {
-         tend(k,j,i,icrm) = -1.0 * pgf(k,j,i,icrm) * rho(k,icrm);
+         tend(k,j,i,icrm) = -1.0 * pgf_hat(k,j,i,icrm) * rho(k,icrm);
       }
    });
 
