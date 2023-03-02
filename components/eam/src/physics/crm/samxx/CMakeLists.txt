@@ -49,21 +49,22 @@ if (YAKL_ARCH_SYCL)
       endif()
       set(OBJ_FILE "kernels.o")
       add_custom_command(
-      OUTPUT ${OBJ_FILE}
-      BYPRODUCTS ${SRC_FILE} ${NAMES_FILE} ${BIN_FILE}
-      COMMAND yakl-aot-generate ${SRC_FILE} ${NAMES_FILE}
-      COMMAND ${OCLOC} compile -file ${SRC_FILE} -device pvc -internal_options "-cl-ext=+cl_khr_fp64"
-      COMMAND ${CMAKE_LINKER} -r -b binary -o ${OBJ_FILE} ${BIN_FILE}
-      DEPENDS yakl-aot-generate
-      COMMENT "Ahead-of-time compilation of FFT kernels"
-    )
-    add_library(yakl-kernels OBJECT IMPORTED)
-    set_property(TARGET yakl-kernels PROPERTY IMPORTED_OBJECTS "${CMAKE_CURRENT_BINARY_DIR}/${OBJ_FILE}")
-    target_sources(samxx PRIVATE ${NAMES_FILE})
+        OUTPUT ${OBJ_FILE}
+        BYPRODUCTS ${SRC_FILE} ${NAMES_FILE} ${BIN_FILE}
+        COMMAND yakl-aot-generate ${SRC_FILE} ${NAMES_FILE}
+        COMMAND ${OCLOC} compile -file ${SRC_FILE} -device pvc -internal_options "-cl-ext=+cl_khr_fp64"
+        COMMAND ${CMAKE_LINKER} -r -b binary -o ${OBJ_FILE} ${BIN_FILE}
+        DEPENDS yakl-aot-generate
+        COMMENT "Ahead-of-time compilation of FFT kernels"
+      )
+      add_library(yakl-kernels OBJECT IMPORTED)
+      set_property(TARGET yakl-kernels PROPERTY IMPORTED_OBJECTS "${CMAKE_CURRENT_BINARY_DIR}/${OBJ_FILE}")
+      target_sources(samxx PRIVATE ${NAMES_FILE})
 
-    target_link_libraries(samxx yakl-kernels)
-  else()
-    message("Building with BBFFT JIT")
+      target_link_libraries(samxx yakl-kernels)
+    else()
+      message("Building with BBFFT JIT")
+    endif()
   endif()
 endif()
 
