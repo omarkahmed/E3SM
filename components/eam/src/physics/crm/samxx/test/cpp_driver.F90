@@ -44,7 +44,7 @@ program driver
   real(crm_rknd), allocatable :: read_crm_state_v_wind     (:,:,:,:)
   real(crm_rknd), allocatable :: read_crm_state_w_wind     (:,:,:,:)
   real(crm_rknd), allocatable :: read_crm_state_temperature(:,:,:,:)
-  real(crm_rknd), allocatable :: read_crm_state_qt         (:,:,:,:)
+  real(crm_rknd), allocatable :: read_crm_state_qv         (:,:,:,:)
   real(crm_rknd), allocatable :: read_crm_state_qp         (:,:,:,:)
   real(crm_rknd), allocatable :: read_crm_state_qn         (:,:,:,:)
   real(crm_rknd), allocatable :: read_crm_rad_qrad         (:,:,:,:)
@@ -59,6 +59,7 @@ program driver
   integer(8) :: t1, t2, tr
 
   logical(c_bool):: use_MMF_VT      ! flag for MMF variance transport
+  logical(c_bool):: use_MMF_ESTM
   integer        :: MMF_VT_wn_max   ! wavenumber cutoff for filtered variance transport
   character(len=7) :: microphysics_scheme = 'sam1mom'
 
@@ -118,7 +119,7 @@ program driver
   allocate( read_crm_state_v_wind     (crm_nx    ,crm_ny    ,crm_nz,ncrms) )
   allocate( read_crm_state_w_wind     (crm_nx    ,crm_ny    ,crm_nz,ncrms) )
   allocate( read_crm_state_temperature(crm_nx    ,crm_ny    ,crm_nz,ncrms) )
-  allocate( read_crm_state_qt         (crm_nx    ,crm_ny    ,crm_nz,ncrms) )
+  allocate( read_crm_state_qv         (crm_nx    ,crm_ny    ,crm_nz,ncrms) )
   allocate( read_crm_state_qp         (crm_nx    ,crm_ny    ,crm_nz,ncrms) )
   allocate( read_crm_state_qn         (crm_nx    ,crm_ny    ,crm_nz,ncrms) )
   allocate( read_crm_rad_qrad         (crm_nx_rad,crm_ny_rad,crm_nz,ncrms) )
@@ -152,7 +153,7 @@ program driver
   call dmdf_read( read_crm_state_v_wind      , fname_in , trim("state_v_wind     ") , myTasks_beg , myTasks_end , .false. , .false. )
   call dmdf_read( read_crm_state_w_wind      , fname_in , trim("state_w_wind     ") , myTasks_beg , myTasks_end , .false. , .false. )
   call dmdf_read( read_crm_state_temperature , fname_in , trim("state_temperature") , myTasks_beg , myTasks_end , .false. , .false. )
-  call dmdf_read( read_crm_state_qt          , fname_in , trim("state_qt         ") , myTasks_beg , myTasks_end , .false. , .false. )
+  call dmdf_read( read_crm_state_qv          , fname_in , trim("state_qt         ") , myTasks_beg , myTasks_end , .false. , .false. )
   call dmdf_read( read_crm_state_qp          , fname_in , trim("state_qp         ") , myTasks_beg , myTasks_end , .false. , .false. )
   call dmdf_read( read_crm_state_qn          , fname_in , trim("state_qn         ") , myTasks_beg , myTasks_end , .false. , .false. )
   call dmdf_read( read_crm_rad_qrad          , fname_in , trim("rad_qrad         ") , myTasks_beg , myTasks_end , .false. , .false. )
@@ -191,7 +192,7 @@ program driver
     crm_state%v_wind     (icrm,:,:,:) = read_crm_state_v_wind     (:,:,:,icrm)
     crm_state%w_wind     (icrm,:,:,:) = read_crm_state_w_wind     (:,:,:,icrm)
     crm_state%temperature(icrm,:,:,:) = read_crm_state_temperature(:,:,:,icrm)
-    crm_state%qt         (icrm,:,:,:) = read_crm_state_qt         (:,:,:,icrm)
+    crm_state%qv         (icrm,:,:,:) = read_crm_state_qv         (:,:,:,icrm)
     crm_state%qp         (icrm,:,:,:) = read_crm_state_qp         (:,:,:,icrm)
     crm_state%qn         (icrm,:,:,:) = read_crm_state_qn         (:,:,:,icrm)
     crm_rad%qrad         (icrm,:,:,:) = read_crm_rad_qrad         (:,:,:,icrm)
@@ -215,6 +216,7 @@ program driver
 
   use_MMF_VT = .false.
   MMF_VT_wn_max = 0
+  use_MMF_ESTM = .false.
 
   ! NOTE - the crm_output%tkew variable is a diagnostic quantity that was 
   ! recently added for the 2020 INCITE simulations, so if you get a build error
@@ -227,7 +229,7 @@ program driver
            crm_input%ul_esmt, crm_input%vl_esmt,                                        &
            crm_input%t_vt, crm_input%q_vt, crm_input%u_vt, &
            crm_state%u_wind, crm_state%v_wind, crm_state%w_wind, crm_state%temperature, &
-           crm_state%qt, crm_state%qp, crm_state%qn, crm_rad%qrad, crm_rad%temperature, &
+           crm_state%qv, crm_state%qp, crm_state%qn, crm_rad%qrad, crm_rad%temperature, &
            crm_rad%qv, crm_rad%qc, crm_rad%qi, crm_rad%cld, crm_output%subcycle_factor, &
            crm_output%prectend, crm_output%precstend, crm_output%cld, crm_output%cldtop, &
            crm_output%gicewp, crm_output%gliqwp, crm_output%mctot, crm_output%mcup, crm_output%mcdn, &
@@ -248,6 +250,7 @@ program driver
            crm_clear_rh, &
            lat0, long0, gcolp, 2, &
            use_MMF_VT, MMF_VT_wn_max, &
+           use_MMF_ESTM, &
            logical(.true.,c_bool) , 2._c_double , logical(.true.,c_bool) )
 
 
@@ -271,7 +274,7 @@ program driver
         call dmdf_write( crm_state%v_wind         (icrm,:,:,:) , 1 , fprefix , trim('state_v_wind        ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
         call dmdf_write( crm_state%w_wind         (icrm,:,:,:) , 1 , fprefix , trim('state_w_wind        ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
         call dmdf_write( crm_state%temperature    (icrm,:,:,:) , 1 , fprefix , trim('state_temperature   ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
-        call dmdf_write( crm_state%qt             (icrm,:,:,:) , 1 , fprefix , trim('state_qt            ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
+        call dmdf_write( crm_state%qv             (icrm,:,:,:) , 1 , fprefix , trim('state_qt            ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
         call dmdf_write( crm_state%qp             (icrm,:,:,:) , 1 , fprefix , trim('state_qp            ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
         call dmdf_write( crm_state%qn             (icrm,:,:,:) , 1 , fprefix , trim('state_qn            ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
         call dmdf_write( crm_output%qcl           (icrm,:,:,:) , 1 , fprefix , trim('output_qcl          ') , (/'crm_nx','crm_ny','crm_nz'/)             , .false. , .false. )
