@@ -32,10 +32,13 @@
 	path = cime
 	url = https://github.com/ESMCI/cime.git
 	branch = master
+[submodule "externals/ekat"]
+        path = externals/ekat
+        url = https://github.com/E3SM-Project/EKAT.git
 [submodule "externals/YAKL"]
 	path = externals/YAKL
 	url = https://github.com/omarkahmed/YAKL.git
-  branch = bbfft-20230227
+        branch = bbfft-20230227
 [submodule "externals/cub"]
 	path = externals/cub
 	url = https://github.com/NVlabs/cub.git
