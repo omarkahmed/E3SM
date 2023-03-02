@@ -56,6 +56,70 @@
 
   -->
 
+  <machine MACH="ortce">
+    <DESC>Intel-ORTCE</DESC>
+    <NODENAME_REGEX>sdp10301\d|sdp445\d|sdp5259|sdp12507\d|sdp13522\d|DUT.*|sdp45\d*|sdp46\d*|ortce-*</NODENAME_REGEX>
+    <OS>LINUX</OS>
+    <COMPILERS>oneapi-ifxgpu,oneapi-ifx,oneapi-ifort,oneapi-ifx-cuda,oneapi-ifort-cuda</COMPILERS>
+    <MPILIBS>mpich,impi</MPILIBS>
+    <CIME_OUTPUT_ROOT>$ENV{E3SM_HOME}</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{DATA_HOME}/cesm-inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$ENV{DATA_HOME}/ptclm-data</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$ENV{E3SM_HOME}/$CASE</DOUT_S_ROOT>
+    <CCSM_CPRNC>$CCSMROOT/tools/cprnc/build/cprnc</CCSM_CPRNC>
+    <GMAKE>make</GMAKE>
+    <GMAKE_J>32</GMAKE_J>
+    <TESTS>e3sm_developer</TESTS>
+    <BATCH_SYSTEM>none</BATCH_SYSTEM>
+    <SUPPORTED_BY>omar dot ahmed at intel dot com</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>72</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>72</MAX_MPITASKS_PER_NODE>
+    <mpirun mpilib="default">
+      <executable>mpirun</executable>
+      <arguments>
+        <arg name="num_tasks">-l -n {{ total_tasks }} -bind-to core </arg>
+      </arguments>
+    </mpirun>
+    <module_system type="none"/>
+    <environment_variables mpilib="impi">
+      <env name="I_MPI_DEBUG">10</env>
+      <env name="I_MPI_PIN_DOMAIN">omp</env>
+      <env name="I_MPI_PIN_ORDER">spread</env>
+      <env name="I_MPI_PIN_CELL">unit</env>
+    </environment_variables>
+    <environment_variables mpilib="mpich">
+      <env name="ONEAPI_MPICH_GPU">NO_GPU</env>
+    </environment_variables>
+    <environment_variables compiler="oneapi-ifx">
+      <env name="LIBOMPTARGET_DEBUG">0</env><!--default 0, max 5 -->
+      <env name="OMP_TARGET_OFFLOAD">DISABLED</env><!--default OMP_TARGET_OFFLOAD=MANDATORY-->
+    </environment_variables>
+    <environment_variables compiler="oneapi-ifxgpu">
+      <env name="SYCL_DEVICE_FILTER">level_zero:gpu</env>
+      <env name="SYCL_CACHE_PERSISTENT">0</env>
+      <env name="GATOR_INITIAL_MB">4000MB</env>
+      <env name="GATOR_DISABLE">0</env>
+      <env name="LIBOMPTARGET_PLUGIN">LEVEL0</env>
+      <env name="LIBOMPTARGET_DEBUG">0</env><!--default 0, max 5 -->
+      <env name="I_MPI_OFFLOAD_CELL_LIST">0,1</env>
+      <env name="I_MPI_OFFLOAD">2</env>
+      <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
+    </environment_variables>
+    <environment_variables>
+      <env name="E3SM_SRCROOT">$SRCROOT</env>
+      <env name="NETCDF_PATH">$ENV{LIBHOME}/packages/netcdf-parallel</env>
+      <env name="NETCDF_C_PATH">$ENV{LIBHOME}/packages/netcdf-parallel</env>
+      <env name="NETCDF_FORTRAN_PATH">$ENV{LIBHOME}/packages/netcdf-parallel</env>
+      <env name="PNETCDF_PATH">$ENV{LIBHOME}/packages/pnetcdf</env>
+      <env name="HDF5_PATH">$ENV{LIBHOME}/packages/hdf5-parallel</env>
+      <env name="PATH">$ENV{LIBHOME}/packages/cmake/bin:$ENV{LIBHOME}/packages/mpich/bin:ENV{LIBHOME}/packages/hdf5-parallel/bin:$ENV{LIBHOME}/packages/netcdf-parallel/bin:$ENV{LIBHOME}/packages/pnetcdf/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">$ENV{LIBHOME}/packages/szip/lib:$ENV{LIBHOME}/packages/mpich/lib:$ENV{LIBHOME}/packages/hdf5-parallel/lib:$ENV{LIBHOME}/packages/netcdf-parallel/lib:$ENV{LIBHOME}/packages/pnetcdf/lib:$ENV{LD_LIBRARY_PATH}</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
+  </machine>
+
   <machine MACH="miller">
     <DESC> ORNL AF cluster 800-node AMD Epyc 2-sockets 64-cores per node</DESC>
     <OS>CNL</OS>
