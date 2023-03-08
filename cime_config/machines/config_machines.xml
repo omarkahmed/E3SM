@@ -74,10 +74,16 @@
     <SUPPORTED_BY>omar dot ahmed at intel dot com</SUPPORTED_BY>
     <MAX_TASKS_PER_NODE>72</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>72</MAX_MPITASKS_PER_NODE>
-    <mpirun mpilib="default">
+    <mpirun mpilib="impi">
       <executable>mpirun</executable>
       <arguments>
         <arg name="num_tasks">-l -n {{ total_tasks }} -bind-to core </arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="mpich">
+      <executable>mpirun</executable>
+      <arguments>
+        <arg name="num_tasks">-l -n {{ total_tasks }} -bind-to core spread.sh </arg>
       </arguments>
     </mpirun>
     <module_system type="none"/>
@@ -99,8 +105,9 @@
       <env name="SYCL_CACHE_PERSISTENT">0</env>
       <env name="GATOR_INITIAL_MB">4000MB</env>
       <env name="GATOR_DISABLE">0</env>
+      <!--env name="OMP_TARGET_OFFLOAD">DISABLED</env--><!--default OMP_TARGET_OFFLOAD=MANDATORY-->
       <env name="LIBOMPTARGET_PLUGIN">LEVEL0</env>
-      <env name="LIBOMPTARGET_DEBUG">0</env><!--default 0, max 5 -->
+      <!--env name="LIBOMPTARGET_DEBUG">0</env--><!--default 0, max 5 -->
       <env name="I_MPI_OFFLOAD_CELL_LIST">0,1</env>
       <env name="I_MPI_OFFLOAD">2</env>
       <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
