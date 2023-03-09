@@ -91,6 +91,11 @@ contains
     real(rtype)            :: lat, lon
     character(len=1000)    :: klevstr, macmicstr, icolstr
 
+    ! store thread private value due to optional parameter for O3 optimization
+    integer                :: icol_p3_tp
+
+    icol_p3_tp = icol_p3
+
     !check if klev is present or not and populate klevstr accordingly
     if(present(klev)) then
        write(klevstr,*)'K level is:',klev
@@ -113,7 +118,7 @@ contains
        col_to_prnt = icol
     else
        icolstr = '*NOTE*: Using auto updated column index from P3 for computing lat-lons'
-       col_to_prnt = icol_p3
+       col_to_prnt = icol_p3_tp
     endif
 
     !initialize proc_num to a negative value
