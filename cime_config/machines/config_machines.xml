@@ -60,7 +60,7 @@
     <DESC>Intel-ORTCE</DESC>
     <NODENAME_REGEX>sdp10301\d|sdp445\d|sdp5259|sdp12507\d|sdp13522\d|DUT.*|sdp45\d*|sdp46\d*|ortce-*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>oneapi-ifxgpu,oneapi-ifx,oneapi-ifort,oneapi-ifx-cuda,oneapi-ifort-cuda</COMPILERS>
+    <COMPILERS>oneapi-ifxgpu,oneapi-ifx,oneapi-ifort,oneapi-ifx-cuda,oneapi-ifort-cuda,gnu</COMPILERS>
     <MPILIBS>mpich,impi,mpi-serial</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{E3SM_HOME}</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{DATA_HOME}/cesm-inputdata</DIN_LOC_ROOT>
