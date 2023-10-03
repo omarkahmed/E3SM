@@ -209,7 +209,6 @@
     <batch_mail_type>, bea, b, e, a</batch_mail_type>
     <submit_args>
       <arg flag="-q" name="$JOB_QUEUE"/>
-      <arg flag="-l walltime=" name="$JOB_WALLCLOCK_TIME"/>
       <arg flag="-A" name="$CHARGE_ACCOUNT"/>
     </submit_args>
     <directives>
@@ -218,6 +217,7 @@
       <directive default="n"> -r {{ rerunnable }} </directive>
       <directive> -j oe </directive>
       <directive> -V </directive>
+      <directive> -l walltime=02:00:00 </directive>
     </directives>
   </batch_system>
 
@@ -463,6 +463,7 @@
       <directive> --constraint=cpu</directive>
     </directives>
     <queues>
+      <!-- Note: walltime is not the max walltime, but the default - see NERSC docs for Q limits, https://docs.nersc.gov/jobs/policy/ -->
       <queue walltimemax="00:30:00" nodemax="4096" default="true">regular</queue>
       <queue walltimemax="00:30:00" nodemax="4096" strict="true">preempt</queue>
       <queue walltimemax="00:30:00" nodemax="8" strict="true">debug</queue>
