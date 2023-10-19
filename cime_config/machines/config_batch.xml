@@ -209,7 +209,7 @@
     <batch_mail_type>, bea, b, e, a</batch_mail_type>
     <submit_args>
       <arg flag="-q" name="$JOB_QUEUE"/>
-      <arg flag="-l walltime=" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-l walltime=$JOB_WALLCLOCK_TIME"/>
       <arg flag="-A" name="$CHARGE_ACCOUNT"/>
     </submit_args>
     <directives>
@@ -515,8 +515,9 @@
     <batch_system MACH="sunspot" type="pbspro">
       <batch_submit>/lus/gila/projects/CSC249ADSE15_CNDA/tools/qsub/throttle</batch_submit>
       <queues>
-        <queue walltimemax="00:30:00" jobmin="1" jobmax="128" default="true">workq</queue>
-        <queue walltimemax="00:30:00" jobmin="1" jobmax="128">diag</queue>
+	<queue walltimemax="00:59:00" jobmin="1" jobmax="3000" default="true">workq-route</queue>
+        <queue walltimemax="00:59:00" jobmin="1" jobmax="3000">workq</queue>
+        <queue walltimemax="00:59:00" jobmin="1" jobmax="128">diag</queue>
       </queues>
     </batch_system>
 
