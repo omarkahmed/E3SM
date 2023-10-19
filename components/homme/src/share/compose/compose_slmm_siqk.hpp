@@ -26,6 +26,18 @@ using homme::Real;
 
 namespace ko = Kokkos;
 
+#if defined(__SYCL_DEVICE_ONLY__) 
+#define PRINTF(format, ...)                                       \
+  do {                                                            \
+    const __attribute__((opencl_constant)) char fmt[] = (format); \
+    sycl::ext::oneapi::experimental::printf(fmt, ##__VA_ARGS__);  \
+  } while (0)
+#else
+  #define PRINTF(format, ...)                                     \
+    printf(format, ##__VA_ARGS__);
+#endif
+
+
 #ifndef pr
 #define pr(m) do {                                          \
     int _pid_ = 0;                                          \

@@ -1,5 +1,5 @@
 #include "cedr_tree.hpp"
-
+#include <iostream>
 #include <set>
 
 namespace cedr {

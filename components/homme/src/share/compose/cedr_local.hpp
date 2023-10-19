@@ -6,6 +6,7 @@
 
 #include "cedr.hpp"
 #include "cedr_kokkos.hpp"
+#include <iostream>
 
 namespace cedr {
 namespace local {
