@@ -384,6 +384,29 @@ struct Functions
     const view_1d_ptr_array<Spack, nfield>& Vs, // (behaviorally const)
     const view_1d_ptr_array<Spack, nfield>& rs);
 
+#ifdef SCREAM_SMALL_KERNELS 
+  static void cloud_sedimentation_disp(
+    const uview_2d<Spack>& qc_incld,
+    const uview_2d<const Spack>& rho,
+    const uview_2d<const Spack>& inv_rho,
+    const uview_2d<const Spack>& cld_frac_l,
+    const uview_2d<const Spack>& acn,
+    const uview_2d<const Spack>& inv_dz,
+    const view_dnu_table& dnu,
+    const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
+    const bool& do_predict_nc,
+    const uview_2d<Spack>& qc, 
+    const uview_2d<Spack>& nc,
+    const uview_2d<Spack>& nc_incld,
+    const uview_2d<Spack>& mu_c,
+    const uview_2d<Spack>& lamc,
+    const uview_2d<Spack>& qc_tend,
+    const uview_2d<Spack>& nc_tend,
+    const uview_1d<Scalar>& precip_liq_surf,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   // Cloud sedimentation
   KOKKOS_FUNCTION
   static void cloud_sedimentation(
@@ -395,7 +418,6 @@ struct Functions
     const uview_1d<const Spack>& inv_dz,
     const view_dnu_table& dnu,
     const MemberType& team,
-    const Workspace& workspace,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const bool& do_predict_nc,
     const uview_1d<Spack>& qc,
@@ -405,8 +427,35 @@ struct Functions
     const uview_1d<Spack>& lamc,
     const uview_1d<Spack>& qc_tend,
     const uview_1d<Spack>& nc_tend,
+    const uview_1d<Spack>& V_qc,
+    const uview_1d<Spack>& V_nc,
+    const uview_1d<Spack>& flux_qx,
+    const uview_1d<Spack>& flux_nx,    
     Scalar& precip_liq_surf);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void rain_sedimentation_disp(
+    const uview_2d<const Spack>& rho,
+    const uview_2d<const Spack>& inv_rho,
+    const uview_2d<const Spack>& rhofacr,
+    const uview_2d<const Spack>& cld_frac_r,
+    const uview_2d<const Spack>& inv_dz,
+    const uview_2d<Spack>& qr_incld,
+    const view_2d_table& vn_table_vals, const view_2d_table& vm_table_vals,
+    const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
+    const uview_2d<Spack>& qr,
+    const uview_2d<Spack>& nr,
+    const uview_2d<Spack>& nr_incld,
+    const uview_2d<Spack>& mu_r,
+    const uview_2d<Spack>& lamr,
+    const uview_2d<Spack>& precip_liq_flux,
+    const uview_2d<Spack>& qr_tend,
+    const uview_2d<Spack>& nr_tend,
+    const uview_1d<Scalar>& precip_liq_surf,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   // TODO: comment
   KOKKOS_FUNCTION
   static void rain_sedimentation(
@@ -417,7 +466,6 @@ struct Functions
     const uview_1d<const Spack>& inv_dz,
     const uview_1d<Spack>& qr_incld,
     const MemberType& team,
-    const Workspace& workspace,
     const view_2d_table& vn_table_vals, const view_2d_table& vm_table_vals,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const uview_1d<Spack>& qr,
@@ -428,8 +476,36 @@ struct Functions
     const uview_1d<Spack>& precip_liq_flux,
     const uview_1d<Spack>& qr_tend,
     const uview_1d<Spack>& nr_tend,
+    const uview_1d<Spack>& V_qr, 
+    const uview_1d<Spack>& V_nr, 
+    const uview_1d<Spack>& flux_qx, 
+    const uview_1d<Spack>& flux_nx,
     Scalar& precip_liq_surf);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void ice_sedimentation_disp(
+    const uview_2d<const Spack>& rho,
+    const uview_2d<const Spack>& inv_rho,
+    const uview_2d<const Spack>& rhofaci,
+    const uview_2d<const Spack>& cld_frac_i,
+    const uview_2d<const Spack>& inv_dz,
+    const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
+    const uview_2d<Spack>& qi,
+    const uview_2d<Spack>& qi_incld,
+    const uview_2d<Spack>& ni,
+    const uview_2d<Spack>& ni_incld,
+    const uview_2d<Spack>& qm,
+    const uview_2d<Spack>& qm_incld,
+    const uview_2d<Spack>& bm,
+    const uview_2d<Spack>& bm_incld,
+    const uview_2d<Spack>& qi_tend,
+    const uview_2d<Spack>& ni_tend,
+    const view_ice_table& ice_table_vals,
+    const uview_1d<Scalar>& precip_ice_surf,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   // TODO: comment
   KOKKOS_FUNCTION
   static void ice_sedimentation(
@@ -439,7 +515,6 @@ struct Functions
     const uview_1d<const Spack>& cld_frac_i,
     const uview_1d<const Spack>& inv_dz,
     const MemberType& team,
-    const Workspace& workspace,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const uview_1d<Spack>& qi,
     const uview_1d<Spack>& qi_incld,
@@ -451,9 +526,34 @@ struct Functions
     const uview_1d<Spack>& bm_incld,
     const uview_1d<Spack>& qi_tend,
     const uview_1d<Spack>& ni_tend,
+    const uview_1d<Spack>& V_qit, 
+    const uview_1d<Spack>& V_nit, 
+    const uview_1d<Spack>& flux_nit, 
+    const uview_1d<Spack>& flux_bir, 
+    const uview_1d<Spack>& flux_qir, 
+    const uview_1d<Spack>& flux_qit,
     const view_ice_table& ice_table_vals,
     Scalar& precip_ice_surf);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void homogeneous_freezing_disp(
+    const uview_2d<const Spack>& T_atm,
+    const uview_2d<const Spack>& inv_exner,
+    const uview_2d<const Spack>& latent_heat_fusion,
+    const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir,
+    const uview_2d<Spack>& qc,
+    const uview_2d<Spack>& nc,
+    const uview_2d<Spack>& qr,
+    const uview_2d<Spack>& nr,
+    const uview_2d<Spack>& qi,
+    const uview_2d<Spack>& ni,
+    const uview_2d<Spack>& qm,
+    const uview_2d<Spack>& bm,
+    const uview_2d<Spack>& th_atm,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   // homogeneous freezing of cloud and rain
   KOKKOS_FUNCTION
   static void homogeneous_freezing(
@@ -736,6 +836,12 @@ struct Functions
   // Note: not a kernel function
   static void get_latent_heat(const Int& nj, const Int& nk, view_2d<Spack>& v, view_2d<Spack>& s, view_2d<Spack>& f);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void check_values_disp(const uview_2d<const Spack>& qv, const uview_2d<const Spack>& temp, const Int& ktop, const Int& kbot,
+                           const Int& timestepcount, const bool& force_abort, const Int& source_ind,
+                           const uview_2d<const Scalar>& col_loc, const Int& nj, const Int& nk);
+#endif
+  
   KOKKOS_FUNCTION
   static void check_values(const uview_1d<const Spack>& qv, const uview_1d<const Spack>& temp, const Int& ktop, const Int& kbot,
                            const Int& timestepcount, const bool& force_abort, const Int& source_ind, const MemberType& team,
@@ -753,6 +859,28 @@ struct Functions
   //
   // main P3 functions
   //
+#ifdef SCREAM_SMALL_KERNELS
+  static void p3_main_init_disp(
+    const Int& nj,const Int& nk_pack,
+    const uview_2d<const Spack>& cld_frac_i, const uview_2d<const Spack>& cld_frac_l,
+    const uview_2d<const Spack>& cld_frac_r, const uview_2d<const Spack>& inv_exner,
+    const uview_2d<const Spack>& th_atm, const uview_2d<const Spack>& dz,
+    const uview_2d<Spack>& diag_equiv_reflectivity, const uview_2d<Spack>& ze_ice,
+    const uview_2d<Spack>& ze_rain, const uview_2d<Spack>& diag_eff_radius_qc,
+    const uview_2d<Spack>& diag_eff_radius_qi, const uview_2d<Spack>& inv_cld_frac_i,
+    const uview_2d<Spack>& inv_cld_frac_l, const uview_2d<Spack>& inv_cld_frac_r,
+    const uview_2d<Spack>& exner, const uview_2d<Spack>& T_atm, const uview_2d<Spack>& qv,
+    const uview_2d<Spack>& inv_dz, const uview_1d<Scalar>& precip_liq_surf, const uview_1d<Scalar>& precip_ice_surf,
+    const uview_2d<Spack>& mu_r, const uview_2d<Spack>& lamr, const uview_2d<Spack>& logn0r, const uview_2d<Spack>& nu,
+    const uview_2d<Spack>& cdist, const uview_2d<Spack>& cdist1, const uview_2d<Spack>& cdistr,
+    const uview_2d<Spack>& qc_incld, const uview_2d<Spack>& qr_incld, const uview_2d<Spack>& qi_incld,
+    const uview_2d<Spack>& qm_incld, const uview_2d<Spack>& nc_incld, const uview_2d<Spack>& nr_incld, const uview_2d<Spack>& ni_incld,
+    const uview_2d<Spack>& bm_incld, const uview_2d<Spack>& inv_rho, const uview_2d<Spack>& prec, const uview_2d<Spack>& rho, const uview_2d<Spack>& rhofacr,
+    const uview_2d<Spack>& rhofaci, const uview_2d<Spack>& acn, const uview_2d<Spack>& qv_sat_l, const uview_2d<Spack>& qv_sat_i, const uview_2d<Spack>& sup,
+    const uview_2d<Spack>& qv_supersat_i, const uview_2d<Spack>& qtend_ignore, const uview_2d<Spack>& ntend_ignore, const uview_2d<Spack>& mu_c,
+    const uview_2d<Spack>& lamc, const uview_2d<Spack>& rho_qi, const uview_2d<Spack>& qv2qi_depos_tend, const uview_2d<Spack>& precip_total_tend,
+    const uview_2d<Spack>& nevapr, const uview_2d<Spack>& precip_liq_flux, const uview_2d<Spack>& precip_ice_flux);
+#endif
 
   KOKKOS_FUNCTION
   static void p3_main_init(
@@ -778,8 +906,59 @@ struct Functions
     const uview_1d<Spack>& inv_dz,
     Scalar& precip_liq_surf,
     Scalar& precip_ice_surf,
-    view_1d_ptr_array<Spack, 36>& zero_init);
+    view_1d_ptr_array<Spack, 44>& zero_init);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void p3_main_part1_disp(
+    const Int& nj,
+    const Int& nk,
+    const bool& do_predict_nc,
+    const bool& do_prescribed_CCN,
+    const Scalar& dt,
+    const uview_2d<const Spack>& pres,
+    const uview_2d<const Spack>& dpres,
+    const uview_2d<const Spack>& dz,
+    const uview_2d<const Spack>& nc_nuceat_tend,
+    const uview_2d<const Spack>& nccn_prescribed,
+    const uview_2d<const Spack>& inv_exner,
+    const uview_2d<const Spack>& exner,
+    const uview_2d<const Spack>& inv_cld_frac_l,
+    const uview_2d<const Spack>& inv_cld_frac_i,
+    const uview_2d<const Spack>& inv_cld_frac_r,
+    const uview_2d<const Spack>& latent_heat_vapor,
+    const uview_2d<const Spack>& latent_heat_sublim,
+    const uview_2d<const Spack>& latent_heat_fusion,
+    const uview_2d<Spack>& T_atm,
+    const uview_2d<Spack>& rho,
+    const uview_2d<Spack>& inv_rho,
+    const uview_2d<Spack>& qv_sat_l,
+    const uview_2d<Spack>& qv_sat_i,
+    const uview_2d<Spack>& qv_supersat_i,
+    const uview_2d<Spack>& rhofacr,
+    const uview_2d<Spack>& rhofaci,
+    const uview_2d<Spack>& acn,
+    const uview_2d<Spack>& qv,
+    const uview_2d<Spack>& th_atm,
+    const uview_2d<Spack>& qc,
+    const uview_2d<Spack>& nc,
+    const uview_2d<Spack>& qr,
+    const uview_2d<Spack>& nr,
+    const uview_2d<Spack>& qi,
+    const uview_2d<Spack>& ni,
+    const uview_2d<Spack>& qm,
+    const uview_2d<Spack>& bm,
+    const uview_2d<Spack>& qc_incld,
+    const uview_2d<Spack>& qr_incld,
+    const uview_2d<Spack>& qi_incld,
+    const uview_2d<Spack>& qm_incld,
+    const uview_2d<Spack>& nc_incld,
+    const uview_2d<Spack>& nr_incld,
+    const uview_2d<Spack>& ni_incld,
+    const uview_2d<Spack>& bm_incld,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   KOKKOS_FUNCTION
   static void p3_main_part1(
     const MemberType& team,
@@ -830,6 +1009,86 @@ struct Functions
     bool& is_nucleat_possible,
     bool& is_hydromet_present);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void p3_main_part2_disp(
+    const Int& nj,
+    const Int& nk,
+    const bool& do_predict_nc,
+    const bool& do_prescribed_CCN,
+    const Scalar& dt,
+    const Scalar& inv_dt,
+    const view_dnu_table& dnu,
+    const view_ice_table& ice_table_vals,
+    const view_collect_table& collect_table_vals,
+    const view_2d_table& revap_table_vals,
+    const uview_2d<const Spack>& pres,
+    const uview_2d<const Spack>& dpres,
+    const uview_2d<const Spack>& dz,
+    const uview_2d<const Spack>& nc_nuceat_tend,
+    const uview_2d<const Spack>& inv_exner,
+    const uview_2d<const Spack>& exner,
+    const uview_2d<const Spack>& inv_cld_frac_l,
+    const uview_2d<const Spack>& inv_cld_frac_i,
+    const uview_2d<const Spack>& inv_cld_frac_r,
+    const uview_2d<const Spack>& ni_activated,
+    const uview_2d<const Spack>& inv_qc_relvar,
+    const uview_2d<const Spack>& cld_frac_i,
+    const uview_2d<const Spack>& cld_frac_l,
+    const uview_2d<const Spack>& cld_frac_r,
+    const uview_2d<const Spack>& qv_prev,
+    const uview_2d<const Spack>& t_prev,
+    const uview_2d<Spack>& T_atm,
+    const uview_2d<Spack>& rho,
+    const uview_2d<Spack>& inv_rho,
+    const uview_2d<Spack>& qv_sat_l,
+    const uview_2d<Spack>& qv_sat_i,
+    const uview_2d<Spack>& qv_supersat_i,
+    const uview_2d<Spack>& rhofacr,
+    const uview_2d<Spack>& rhofaci,
+    const uview_2d<Spack>& acn,
+    const uview_2d<Spack>& qv,
+    const uview_2d<Spack>& th_atm,
+    const uview_2d<Spack>& qc,
+    const uview_2d<Spack>& nc,
+    const uview_2d<Spack>& qr,
+    const uview_2d<Spack>& nr,
+    const uview_2d<Spack>& qi,
+    const uview_2d<Spack>& ni,
+    const uview_2d<Spack>& qm,
+    const uview_2d<Spack>& bm,
+    const uview_2d<Spack>& latent_heat_vapor,
+    const uview_2d<Spack>& latent_heat_sublim,
+    const uview_2d<Spack>& latent_heat_fusion,
+    const uview_2d<Spack>& qc_incld,
+    const uview_2d<Spack>& qr_incld,
+    const uview_2d<Spack>& qi_incld,
+    const uview_2d<Spack>& qm_incld,
+    const uview_2d<Spack>& nc_incld,
+    const uview_2d<Spack>& nr_incld,
+    const uview_2d<Spack>& ni_incld,
+    const uview_2d<Spack>& bm_incld,
+    const uview_2d<Spack>& mu_c,
+    const uview_2d<Spack>& nu,
+    const uview_2d<Spack>& lamc,
+    const uview_2d<Spack>& cdist,
+    const uview_2d<Spack>& cdist1,
+    const uview_2d<Spack>& cdistr,
+    const uview_2d<Spack>& mu_r,
+    const uview_2d<Spack>& lamr,
+    const uview_2d<Spack>& logn0r,
+    const uview_2d<Spack>& qv2qi_depos_tend,
+    const uview_2d<Spack>& precip_total_tend,
+    const uview_2d<Spack>& nevapr,
+    const uview_2d<Spack>& qr_evap_tend,
+    const uview_2d<Spack>& vap_liq_exchange,
+    const uview_2d<Spack>& vap_ice_exchange,
+    const uview_2d<Spack>& liq_ice_exchange,
+    const uview_2d<Spack>& pratot,
+    const uview_2d<Spack>& prctot,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   KOKKOS_FUNCTION
   static void p3_main_part2(
     const MemberType& team,
@@ -909,6 +1168,49 @@ struct Functions
     bool& is_hydromet_present,
     const Int& nk=-1);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static void p3_main_part3_disp(
+    const Int& nj,
+    const Int& nk_pack,
+    const view_dnu_table& dnu,
+    const view_ice_table& ice_table_vals,
+    const uview_2d<const Spack>& inv_exner,
+    const uview_2d<const Spack>& cld_frac_l,
+    const uview_2d<const Spack>& cld_frac_r,
+    const uview_2d<const Spack>& cld_frac_i,
+    const uview_2d<Spack>& rho,
+    const uview_2d<Spack>& inv_rho,
+    const uview_2d<Spack>& rhofaci,
+    const uview_2d<Spack>& qv,
+    const uview_2d<Spack>& th_atm,
+    const uview_2d<Spack>& qc,
+    const uview_2d<Spack>& nc,
+    const uview_2d<Spack>& qr,
+    const uview_2d<Spack>& nr,
+    const uview_2d<Spack>& qi,
+    const uview_2d<Spack>& ni,
+    const uview_2d<Spack>& qm,
+    const uview_2d<Spack>& bm,
+    const uview_2d<Spack>& latent_heat_vapor,
+    const uview_2d<Spack>& latent_heat_sublim,
+    const uview_2d<Spack>& mu_c,
+    const uview_2d<Spack>& nu,
+    const uview_2d<Spack>& lamc,
+    const uview_2d<Spack>& mu_r,
+    const uview_2d<Spack>& lamr,
+    const uview_2d<Spack>& vap_liq_exchange,
+    const uview_2d<Spack>& ze_rain,
+    const uview_2d<Spack>& ze_ice,
+    const uview_2d<Spack>& diag_vm_qi,
+    const uview_2d<Spack>& diag_eff_radius_qi,
+    const uview_2d<Spack>& diag_diam_qi,
+    const uview_2d<Spack>& rho_qi,
+    const uview_2d<Spack>& diag_equiv_reflectivity,
+    const uview_2d<Spack>& diag_eff_radius_qc,
+    const uview_1d<bool>& is_nucleat_possible,
+    const uview_1d<bool>& is_hydromet_present);
+#endif
+  
   KOKKOS_FUNCTION
   static void p3_main_part3(
     const MemberType& team,
@@ -949,6 +1251,31 @@ struct Functions
     const uview_1d<Spack>& diag_equiv_reflectivity,
     const uview_1d<Spack>& diag_eff_radius_qc);
 
+#ifdef SCREAM_SMALL_KERNELS
+  static Int p3_main_internal_disp(
+    const P3PrognosticState& prognostic_state,
+    const P3DiagnosticInputs& diagnostic_inputs,
+    const P3DiagnosticOutputs& diagnostic_outputs,
+    const P3Infrastructure& infrastructure,
+    const P3HistoryOnly& history_only,
+    const P3LookupTables& lookup_tables,
+    const WorkspaceManager& workspace_mgr,
+    Int nj, // number of columns
+    Int nk); // number of vertical cells per column
+#endif
+  
+  // Return microseconds elapsed
+  static Int p3_main_internal(
+    const P3PrognosticState& prognostic_state,
+    const P3DiagnosticInputs& diagnostic_inputs,
+    const P3DiagnosticOutputs& diagnostic_outputs,
+    const P3Infrastructure& infrastructure,
+    const P3HistoryOnly& history_only,
+    const P3LookupTables& lookup_tables,
+    const WorkspaceManager& workspace_mgr,
+    Int nj, // number of columns
+    Int nk); // number of vertical cells per column
+
   // Return microseconds elapsed
   static Int p3_main(
     const P3PrognosticState& prognostic_state,
@@ -960,7 +1287,7 @@ struct Functions
     const WorkspaceManager& workspace_mgr,
     Int nj, // number of columns
     Int nk); // number of vertical cells per column
-
+  
   KOKKOS_FUNCTION
   static void ice_supersat_conservation(Spack& qidep, Spack& qinuc, const Spack& cld_frac_i, const Spack& qv, const Spack& qv_sat_i, const Spack& latent_heat_sublim, const Spack& t_atm, const Real& dt, const Spack& qi2qv_sublim_tend, const Spack& qr2qv_evap_tend, const Smask& context = Smask(true));
 

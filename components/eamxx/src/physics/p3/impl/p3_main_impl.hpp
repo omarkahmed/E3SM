@@ -41,7 +41,7 @@ void Functions<S,D>
   const uview_1d<Spack>& inv_dz,
   Scalar& precip_liq_surf,
   Scalar& precip_ice_surf,
-  view_1d_ptr_array<Spack, 36>& zero_init)
+  view_1d_ptr_array<Spack, 44>& zero_init)
 {
   precip_liq_surf = 0;
   precip_ice_surf = 0;
@@ -71,7 +71,7 @@ void Functions<S,D>
 
 template <typename S, typename D>
 Int Functions<S,D>
-::p3_main(
+::p3_main_internal(
   const P3PrognosticState& prognostic_state,
   const P3DiagnosticInputs& diagnostic_inputs,
   const P3DiagnosticOutputs& diagnostic_outputs,
@@ -138,9 +138,18 @@ Int Functions<S,D>
       qtend_ignore, ntend_ignore,
 
       // Variables still used in F90 but removed from C++ interface
-      mu_c, lamc, precip_total_tend, nevapr, qr_evap_tend;
+      mu_c, lamc, precip_total_tend, nevapr, qr_evap_tend,
 
-    workspace.template take_many_and_reset<46>(
+      // cloud sedimentation
+      V_qc, V_nc, flux_qx, flux_nx,
+      
+      // ice sedimentation
+      V_qit, V_nit, flux_nit, flux_bir, flux_qir, flux_qit,
+
+      // rain sedimentation
+      V_qr, V_nr;
+
+    workspace.template take_many_and_reset<44>(
       {
         "mu_r", "T_atm", "lamr", "logn0r", "nu", "cdist", "cdist1", "cdistr",
         "inv_cld_frac_i", "inv_cld_frac_l", "inv_cld_frac_r", "qc_incld", "qr_incld", "qi_incld", "qm_incld",
@@ -149,7 +158,10 @@ Int Functions<S,D>
         "rhofacr", "rhofaci", "acn", "qv_sat_l", "qv_sat_i", "sup", "qv_supersat_i",
         "tmparr1", "exner", "diag_equiv_reflectivity", "diag_vm_qi", "diag_diam_qi",
         "pratot", "prctot", "qtend_ignore", "ntend_ignore",
-        "mu_c", "lamc", "precip_total_tend", "nevapr", "qr_evap_tend"
+        "mu_c", "lamc", "precip_total_tend", "nevapr", "qr_evap_tend", 
+	"V_qc", "V_nc", "flux_qx", "flux_nx",
+	"V_qit", "V_nit", "flux_nit", "flux_bir", "flux_qir", "flux_qit",
+        "V_qr", "V_nr"
       },
       {
         &mu_r, &T_atm, &lamr, &logn0r, &nu, &cdist, &cdist1, &cdistr,
@@ -159,7 +171,10 @@ Int Functions<S,D>
         &rhofacr, &rhofaci, &acn, &qv_sat_l, &qv_sat_i, &sup, &qv_supersat_i,
         &tmparr1, &exner, &diag_equiv_reflectivity, &diag_vm_qi, &diag_diam_qi,
         &pratot, &prctot, &qtend_ignore, &ntend_ignore, 
-        &mu_c, &lamc, &precip_total_tend, &nevapr, &qr_evap_tend
+        &mu_c, &lamc, &precip_total_tend, &nevapr, &qr_evap_tend,
+	&V_qc, &V_nc, &flux_qx, &flux_nx,
+	&V_qit, &V_nit, &flux_nit, &flux_bir, &flux_qir, &flux_qit,
+	&V_qr, &V_nr, &flux_qx, &flux_nx
       });
       
     // Get single-column subviews of all inputs, shouldn't need any i-indexing
@@ -205,13 +220,16 @@ Int Functions<S,D>
     bool &nucleationPossible  = bools(i, 0);
     bool &hydrometeorsPresent = bools(i, 1);
 
-    view_1d_ptr_array<Spack, 36> zero_init = {
+    view_1d_ptr_array<Spack, 44> zero_init = {
       &mu_r, &lamr, &logn0r, &nu, &cdist, &cdist1, &cdistr,
       &qc_incld, &qr_incld, &qi_incld, &qm_incld,
       &nc_incld, &nr_incld, &ni_incld, &bm_incld,
       &inv_rho, &prec, &rho, &rhofacr, &rhofaci, &acn, &qv_sat_l, &qv_sat_i, &sup, &qv_supersat_i,
       &tmparr1, &qtend_ignore, &ntend_ignore,
-      &mu_c, &lamc, &orho_qi, &oqv2qi_depos_tend, &precip_total_tend, &nevapr, &oprecip_liq_flux, &oprecip_ice_flux
+      &mu_c, &lamc, &orho_qi, &oqv2qi_depos_tend, &precip_total_tend, &nevapr, &oprecip_liq_flux, &oprecip_ice_flux,
+      &V_qc, &V_nc, &flux_qx, &flux_nx,
+      &V_qit, &V_nit, &flux_nit, &flux_bir, &flux_qir, &flux_qit,
+      &V_qr, &V_nr
     };
 
     // initialize
@@ -267,23 +285,23 @@ Int Functions<S,D>
     // Cloud sedimentation:  (adaptive substepping)
 
     cloud_sedimentation(
-      qc_incld, rho, inv_rho, ocld_frac_l, acn, inv_dz, lookup_tables.dnu_table_vals, team, workspace,
+      qc_incld, rho, inv_rho, ocld_frac_l, acn, inv_dz, lookup_tables.dnu_table_vals, team,
       nk, ktop, kbot, kdir, infrastructure.dt, inv_dt, infrastructure.predictNc,
-      oqc, onc, nc_incld, mu_c, lamc, qtend_ignore, ntend_ignore,
+      oqc, onc, nc_incld, mu_c, lamc, qtend_ignore, ntend_ignore, V_qc, V_nc, flux_qx, flux_nx,
       diagnostic_outputs.precip_liq_surf(i));
 
     // Rain sedimentation:  (adaptive substepping)
     rain_sedimentation(
-      rho, inv_rho, rhofacr, ocld_frac_r, inv_dz, qr_incld, team, workspace,
+      rho, inv_rho, rhofacr, ocld_frac_r, inv_dz, qr_incld, team,
       lookup_tables.vn_table_vals, lookup_tables.vm_table_vals, nk, ktop, kbot, kdir, infrastructure.dt, inv_dt, oqr,
-      onr, nr_incld, mu_r, lamr, oprecip_liq_flux, qtend_ignore, ntend_ignore,
+      onr, nr_incld, mu_r, lamr, oprecip_liq_flux, qtend_ignore, ntend_ignore, V_qr, V_nr, flux_qx, flux_nx,
       diagnostic_outputs.precip_liq_surf(i));
 
     // Ice sedimentation:  (adaptive substepping)
     ice_sedimentation(
-      rho, inv_rho, rhofaci, ocld_frac_i, inv_dz, team, workspace, nk, ktop, kbot,
+      rho, inv_rho, rhofaci, ocld_frac_i, inv_dz, team, nk, ktop, kbot,
       kdir, infrastructure.dt, inv_dt, oqi, qi_incld, oni, ni_incld,
-      oqm, qm_incld, obm, bm_incld, qtend_ignore, ntend_ignore,
+      oqm, qm_incld, obm, bm_incld, qtend_ignore, ntend_ignore, V_qit, V_nit, flux_nit, flux_bir, flux_qir, flux_qit,
       lookup_tables.ice_table_vals, diagnostic_outputs.precip_ice_surf(i));
 
     // homogeneous freezing of cloud and rain
@@ -325,6 +343,40 @@ Int Functions<S,D>
   auto finish = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
   return duration.count();
+}
+
+template <typename S, typename D>
+Int Functions<S,D>
+::p3_main(
+  const P3PrognosticState& prognostic_state,
+  const P3DiagnosticInputs& diagnostic_inputs,
+  const P3DiagnosticOutputs& diagnostic_outputs,
+  const P3Infrastructure& infrastructure,
+  const P3HistoryOnly& history_only,
+  const P3LookupTables& lookup_tables,
+  const WorkspaceManager& workspace_mgr,
+  Int nj,
+  Int nk)
+{	
+#ifndef SCREAM_SMALL_KERNELS
+  return p3_main_internal(prognostic_state,
+                         diagnostic_inputs,
+                         diagnostic_outputs,
+                         infrastructure,
+                         history_only,
+                         lookup_tables,
+                         workspace_mgr,
+                         nj, nk);
+#else
+  return p3_main_internal_disp(prognostic_state,
+                               diagnostic_inputs,
+                               diagnostic_outputs,
+                               infrastructure,
+                               history_only,
+                               lookup_tables,
+                               workspace_mgr,
+                               nj, nk);
+#endif	
 }
 
 } // namespace p3
