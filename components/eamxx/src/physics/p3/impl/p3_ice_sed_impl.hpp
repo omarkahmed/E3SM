@@ -72,6 +72,7 @@ void Functions<S,D>
   const uview_1d<const Spack>& cld_frac_i,
   const uview_1d<const Spack>& inv_dz,
   const MemberType& team,
+  const Workspace& workspace,
   const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
   const uview_1d<Spack>& qi,
   const uview_1d<Spack>& qi_incld,
@@ -83,15 +84,15 @@ void Functions<S,D>
   const uview_1d<Spack>& bm_incld,
   const uview_1d<Spack>& qi_tend,
   const uview_1d<Spack>& ni_tend,
-  const uview_1d<Spack>& V_qit,
-  const uview_1d<Spack>& V_nit,
-  const uview_1d<Spack>& flux_nit,
-  const uview_1d<Spack>& flux_bir,
-  const uview_1d<Spack>& flux_qir,
-  const uview_1d<Spack>& flux_qit,
   const view_ice_table& ice_table_vals,
   Scalar& precip_ice_surf)
 {
+  // Get temporary workspaces needed for the ice-sed calculation
+  uview_1d<Spack> V_qit, V_nit, flux_nit, flux_bir, flux_qir, flux_qit;
+  workspace.template take_many_contiguous_unsafe<6>(
+    {"V_qit", "V_nit", "flux_nit", "flux_bir", "flux_qir", "flux_qit"},
+    {&V_qit, &V_nit, &flux_nit, &flux_bir, &flux_qir, &flux_qit});
+
   const view_1d_ptr_array<Spack, 4>
     fluxes_ptr = {&flux_qit, &flux_nit, &flux_qir, &flux_bir},
     vs_ptr     = {&V_qit, &V_nit, &V_qit, &V_qit},
@@ -193,6 +194,9 @@ void Functions<S,D>
       qi_tend(pk) = (qi(pk) - qi_tend(pk)) * inv_dt; // Liq. sedimentation tendency, measure
       ni_tend(pk) = (ni(pk) - ni_tend(pk)) * inv_dt; // Liq. # sedimentation tendency, measure
   });
+
+  workspace.template release_many_contiguous<6>(
+    {&V_qit, &V_nit, &flux_nit, &flux_bir, &flux_qir, &flux_qit});
 }
 
 template <typename S, typename D>

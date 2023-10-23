@@ -23,6 +23,7 @@ void Functions<S,D>
     const uview_1d<const Spack>& inv_dz,
     const view_dnu_table& dnu,
     const MemberType& team,
+    const Workspace& workspace,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt, const bool& do_predict_nc,
     const uview_1d<Spack>& qc,
     const uview_1d<Spack>& nc,
@@ -31,12 +32,14 @@ void Functions<S,D>
     const uview_1d<Spack>& lamc,
     const uview_1d<Spack>& qc_tend,
     const uview_1d<Spack>& nc_tend,
-    const uview_1d<Spack>& V_qc,
-    const uview_1d<Spack>& V_nc,
-    const uview_1d<Spack>& flux_qx,
-    const uview_1d<Spack>& flux_nx,
     Scalar& precip_liq_surf)
 {
+  // Get temporary workspaces needed for the cloud-sed calculation
+  uview_1d<Spack> V_qc, V_nc, flux_qx, flux_nx;
+  workspace.template take_many_contiguous_unsafe<4>(
+    {"V_qc", "V_nc", "flux_qx", "flux_nx"},
+    {&V_qc, &V_nc, &flux_qx, &flux_nx});
+
   const view_1d_ptr_array<Spack, 2>
     fluxes_ptr = {&flux_qx, &flux_nx},
     vs_ptr     = {&V_qc, &V_nc},
@@ -138,6 +141,9 @@ void Functions<S,D>
       qc_tend(pk) = (qc(pk) - qc_tend(pk)) * inv_dt; // Liq. sedimentation tendency, measure
       nc_tend(pk) = (nc(pk) - nc_tend(pk)) * inv_dt; // Liq. # sedimentation tendency, measure
   });
+
+  workspace.template release_many_contiguous<4>(
+    {&V_qc, &V_nc, &flux_qx, &flux_nx});
 }
 
 } // namespace p3

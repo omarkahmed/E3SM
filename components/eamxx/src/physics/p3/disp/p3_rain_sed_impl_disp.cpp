@@ -14,6 +14,7 @@ void Functions<Real,DefaultDevice>
   const uview_2d<const Spack>& cld_frac_r,
   const uview_2d<const Spack>& inv_dz,
   const uview_2d<Spack>& qr_incld,
+  const WorkspaceManager& workspace_mgr,
   const view_2d_table& vn_table_vals, const view_2d_table& vm_table_vals,
   const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
   const uview_2d<Spack>& qr,
@@ -31,17 +32,12 @@ void Functions<Real,DefaultDevice>
   using ExeSpace = typename KT::ExeSpace;
   const Int nk_pack = ekat::npack<Spack>(nk);
   const auto policy = ekat::ExeSpaceUtils<ExeSpace>::get_default_team_policy(nj, nk_pack);
-
-  view_2d<Spack> V_qc("V_qc", nj, nk_pack), 
-                 V_nc("V_nc", nj, nk_pack), 
-		 flux_qx("flux_qx", nj, nk_pack), 
-		 flux_nx("flux_nx", nj, nk_pack);
-
   // p3_rain_sedimentation loop
   Kokkos::parallel_for("p3_rain_sed_disp",
     policy, KOKKOS_LAMBDA(const MemberType& team) {
 
     const Int i = team.league_rank();
+    auto workspace = workspace_mgr.get_workspace(team);
     if (!(nucleationPossible(i) || hydrometeorsPresent(i))) {
       return;
     }
@@ -50,11 +46,10 @@ void Functions<Real,DefaultDevice>
     rain_sedimentation(
       ekat::subview(rho, i), ekat::subview(inv_rho, i), ekat::subview(rhofacr, i), ekat::subview(cld_frac_r, i), 
       ekat::subview(inv_dz, i), ekat::subview(qr_incld, i), 
-      team, vn_table_vals, vm_table_vals, nk, ktop, kbot, kdir, dt, inv_dt, 
+      team, workspace, vn_table_vals, vm_table_vals, nk, ktop, kbot, kdir, dt, inv_dt, 
       ekat::subview(qr, i), ekat::subview(nr, i), ekat::subview(nr_incld, i), ekat::subview(mu_r, i), 
       ekat::subview(lamr, i), ekat::subview(precip_liq_flux, i), 
-      ekat::subview(qr_tend, i), ekat::subview(nr_tend, i), ekat::subview(V_qc, i), ekat::subview(V_nc, i),
-      ekat::subview(flux_qx, i), ekat::subview(flux_nx, i), precip_liq_surf(i));
+      ekat::subview(qr_tend, i), ekat::subview(nr_tend, i), precip_liq_surf(i));
   });
 
 }

@@ -258,7 +258,7 @@ Int Functions<Real,DefaultDevice>
 
   // Cloud sedimentation:  (adaptive substepping)
   cloud_sedimentation_disp(
-      qc_incld, rho, inv_rho, cld_frac_l, acn, inv_dz, lookup_tables.dnu_table_vals,
+      qc_incld, rho, inv_rho, cld_frac_l, acn, inv_dz, lookup_tables.dnu_table_vals, workspace_mgr,
       nj, nk, ktop, kbot, kdir, infrastructure.dt, inv_dt, infrastructure.predictNc,
       qc, nc, nc_incld, mu_c, lamc, qtend_ignore, ntend_ignore,
       diagnostic_outputs.precip_liq_surf, nucleationPossible, hydrometeorsPresent);
@@ -266,14 +266,14 @@ Int Functions<Real,DefaultDevice>
 
   // Rain sedimentation:  (adaptive substepping)
   rain_sedimentation_disp(
-      rho, inv_rho, rhofacr, cld_frac_r, inv_dz, qr_incld,
+      rho, inv_rho, rhofacr, cld_frac_r, inv_dz, qr_incld, workspace_mgr,
       lookup_tables.vn_table_vals, lookup_tables.vm_table_vals, nj, nk, ktop, kbot, kdir, infrastructure.dt, inv_dt, qr,
       nr, nr_incld, mu_r, lamr, precip_liq_flux, qtend_ignore, ntend_ignore,
       diagnostic_outputs.precip_liq_surf, nucleationPossible, hydrometeorsPresent);
 
   // Ice sedimentation:  (adaptive substepping)
   ice_sedimentation_disp(
-      rho, inv_rho, rhofaci, cld_frac_i, inv_dz, nj, nk, ktop, kbot,
+      rho, inv_rho, rhofaci, cld_frac_i, inv_dz, workspace_mgr, nj, nk, ktop, kbot,
       kdir, infrastructure.dt, inv_dt, qi, qi_incld, ni, ni_incld,
       qm, qm_incld, bm, bm_incld, qtend_ignore, ntend_ignore,
       lookup_tables.ice_table_vals, diagnostic_outputs.precip_ice_surf, nucleationPossible, hydrometeorsPresent);

@@ -393,6 +393,7 @@ struct Functions
     const uview_2d<const Spack>& acn,
     const uview_2d<const Spack>& inv_dz,
     const view_dnu_table& dnu,
+    const WorkspaceManager& workspace_mgr,
     const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const bool& do_predict_nc,
     const uview_2d<Spack>& qc, 
@@ -418,6 +419,7 @@ struct Functions
     const uview_1d<const Spack>& inv_dz,
     const view_dnu_table& dnu,
     const MemberType& team,
+    const Workspace& workspace,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const bool& do_predict_nc,
     const uview_1d<Spack>& qc,
@@ -427,10 +429,6 @@ struct Functions
     const uview_1d<Spack>& lamc,
     const uview_1d<Spack>& qc_tend,
     const uview_1d<Spack>& nc_tend,
-    const uview_1d<Spack>& V_qc,
-    const uview_1d<Spack>& V_nc,
-    const uview_1d<Spack>& flux_qx,
-    const uview_1d<Spack>& flux_nx,    
     Scalar& precip_liq_surf);
 
 #ifdef SCREAM_SMALL_KERNELS
@@ -441,6 +439,7 @@ struct Functions
     const uview_2d<const Spack>& cld_frac_r,
     const uview_2d<const Spack>& inv_dz,
     const uview_2d<Spack>& qr_incld,
+    const WorkspaceManager& workspace_mgr,
     const view_2d_table& vn_table_vals, const view_2d_table& vm_table_vals,
     const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const uview_2d<Spack>& qr,
@@ -466,6 +465,7 @@ struct Functions
     const uview_1d<const Spack>& inv_dz,
     const uview_1d<Spack>& qr_incld,
     const MemberType& team,
+    const Workspace& workspace,
     const view_2d_table& vn_table_vals, const view_2d_table& vm_table_vals,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const uview_1d<Spack>& qr,
@@ -476,10 +476,6 @@ struct Functions
     const uview_1d<Spack>& precip_liq_flux,
     const uview_1d<Spack>& qr_tend,
     const uview_1d<Spack>& nr_tend,
-    const uview_1d<Spack>& V_qr, 
-    const uview_1d<Spack>& V_nr, 
-    const uview_1d<Spack>& flux_qx, 
-    const uview_1d<Spack>& flux_nx,
     Scalar& precip_liq_surf);
 
 #ifdef SCREAM_SMALL_KERNELS
@@ -489,6 +485,7 @@ struct Functions
     const uview_2d<const Spack>& rhofaci,
     const uview_2d<const Spack>& cld_frac_i,
     const uview_2d<const Spack>& inv_dz,
+    const WorkspaceManager& workspace_mgr,
     const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const uview_2d<Spack>& qi,
     const uview_2d<Spack>& qi_incld,
@@ -515,6 +512,7 @@ struct Functions
     const uview_1d<const Spack>& cld_frac_i,
     const uview_1d<const Spack>& inv_dz,
     const MemberType& team,
+    const Workspace& workspace,
     const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
     const uview_1d<Spack>& qi,
     const uview_1d<Spack>& qi_incld,
@@ -526,12 +524,6 @@ struct Functions
     const uview_1d<Spack>& bm_incld,
     const uview_1d<Spack>& qi_tend,
     const uview_1d<Spack>& ni_tend,
-    const uview_1d<Spack>& V_qit, 
-    const uview_1d<Spack>& V_nit, 
-    const uview_1d<Spack>& flux_nit, 
-    const uview_1d<Spack>& flux_bir, 
-    const uview_1d<Spack>& flux_qir, 
-    const uview_1d<Spack>& flux_qit,
     const view_ice_table& ice_table_vals,
     Scalar& precip_ice_surf);
 
@@ -906,7 +898,7 @@ struct Functions
     const uview_1d<Spack>& inv_dz,
     Scalar& precip_liq_surf,
     Scalar& precip_ice_surf,
-    view_1d_ptr_array<Spack, 44>& zero_init);
+    view_1d_ptr_array<Spack, 36>& zero_init);
 
 #ifdef SCREAM_SMALL_KERNELS
   static void p3_main_part1_disp(
