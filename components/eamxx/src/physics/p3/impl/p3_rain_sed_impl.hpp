@@ -44,6 +44,7 @@ void Functions<S,D>
   const uview_1d<const Spack>& inv_dz,
   const uview_1d<Spack>& qr_incld,
   const MemberType& team,
+  const Workspace& workspace,
   const view_2d_table& vn_table_vals, const view_2d_table& vm_table_vals,
   const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
   const uview_1d<Spack>& qr,
@@ -54,12 +55,14 @@ void Functions<S,D>
   const uview_1d<Spack>& precip_liq_flux,
   const uview_1d<Spack>& qr_tend,
   const uview_1d<Spack>& nr_tend,
-  const uview_1d<Spack>& V_qr,
-  const uview_1d<Spack>& V_nr,
-  const uview_1d<Spack>& flux_qx,
-  const uview_1d<Spack>& flux_nx,
   Scalar& precip_liq_surf)
 {
+  // Get temporary workspaces needed for the ice-sed calculation
+  uview_1d<Spack> V_qr, V_nr, flux_qx, flux_nx;
+  workspace.template take_many_contiguous_unsafe<4>(
+    {"V_qr", "V_nr", "flux_qx", "flux_nx"},
+    {&V_qr, &V_nr, &flux_qx, &flux_nx});
+
   const view_1d_ptr_array<Spack, 2>
     fluxes_ptr = {&flux_qx, &flux_nx},
     vs_ptr     = {&V_qr, &V_nr},
@@ -160,6 +163,9 @@ void Functions<S,D>
     qr_tend(pk) = (qr(pk) - qr_tend(pk)) * inv_dt; // Rain sedimentation tendency, measure
     nr_tend(pk) = (nr(pk) - nr_tend(pk)) * inv_dt; // Rain # sedimentation tendency, measure
   });
+
+  workspace.template release_many_contiguous<4>(
+    {&V_qr, &V_nr, &flux_qx, &flux_nx});
 }
 
 } // namespace p3

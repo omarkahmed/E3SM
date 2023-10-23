@@ -19,6 +19,7 @@ void Functions<Real,DefaultDevice>
     const uview_2d<const Spack>& acn,
     const uview_2d<const Spack>& inv_dz,
     const view_dnu_table& dnu,
+    const WorkspaceManager& workspace_mgr,
     const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt, const bool& do_predict_nc,
     const uview_2d<Spack>& qc,
     const uview_2d<Spack>& nc,
@@ -34,27 +35,23 @@ void Functions<Real,DefaultDevice>
   using ExeSpace = typename KT::ExeSpace;
   const Int nk_pack = ekat::npack<Spack>(nk);
   const auto policy = ekat::ExeSpaceUtils<ExeSpace>::get_default_team_policy(nj, nk_pack);
-
-  view_2d<Spack> V_qc("V_qc", nj, nk_pack),
-                 V_nc("V_nc", nj, nk_pack),
-                 flux_qx("flux_qx", nj, nk_pack),
-                 flux_nx("flux_nx", nj, nk_pack);
-
   // p3_cloud_sedimentation loop
   Kokkos::parallel_for(
     "p3_cloud_sedimentation",
     policy, KOKKOS_LAMBDA(const MemberType& team) {
 
     const Int i = team.league_rank();
+    auto workspace = workspace_mgr.get_workspace(team);
     if (!(nucleationPossible(i) || hydrometeorsPresent(i))) {
       return;
     }
 
     cloud_sedimentation(
       ekat::subview(qc_incld, i), ekat::subview(rho, i), ekat::subview(inv_rho, i), ekat::subview(cld_frac_l, i), 
-      ekat::subview(acn, i), ekat::subview(inv_dz, i), dnu, team, nk, ktop, kbot, kdir, dt, inv_dt, do_predict_nc,
+      ekat::subview(acn, i), ekat::subview(inv_dz, i), dnu, team, workspace,
+      nk, ktop, kbot, kdir, dt, inv_dt, do_predict_nc,
       ekat::subview(qc, i), ekat::subview(nc, i), ekat::subview(nc_incld, i), ekat::subview(mu_c, i), ekat::subview(lamc, i), ekat::subview(qc_tend, i),
-      ekat::subview(nc_tend, i), ekat::subview(V_qc, i), ekat::subview(V_nc, i), ekat::subview(flux_qx, i), ekat::subview(flux_nx, i),
+      ekat::subview(nc_tend, i),
       precip_liq_surf(i));
   });
 

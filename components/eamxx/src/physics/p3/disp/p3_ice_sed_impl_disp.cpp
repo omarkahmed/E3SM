@@ -13,6 +13,7 @@ void Functions<Real,DefaultDevice>
   const uview_2d<const Spack>& rhofaci,
   const uview_2d<const Spack>& cld_frac_i,
   const uview_2d<const Spack>& inv_dz,
+  const WorkspaceManager& workspace_mgr,
   const Int& nj, const Int& nk, const Int& ktop, const Int& kbot, const Int& kdir, const Scalar& dt, const Scalar& inv_dt,
   const uview_2d<Spack>& qi,
   const uview_2d<Spack>& qi_incld,
@@ -32,13 +33,6 @@ void Functions<Real,DefaultDevice>
   using ExeSpace = typename KT::ExeSpace;
   const Int nk_pack = ekat::npack<Spack>(nk);
   const auto policy = ekat::ExeSpaceUtils<ExeSpace>::get_default_team_policy(nj, nk_pack);
-  view_2d<Spack> V_qit("V_qit", nj, nk_pack), 
-	         V_nit("V_nit", nj, nk_pack), 
-		 flux_nit("flux_nit", nj, nk_pack), 
-		 flux_bir("flux_bir", nj, nk_pack), 
-		 flux_qir("flux_qir", nj, nk_pack), 
-		 flux_qit("flux_qit", nj, nk_pack);
-
   // p3_ice_sedimentation loop
   Kokkos::parallel_for("p3_ice_sedimentation",
     policy, KOKKOS_LAMBDA(const MemberType& team) {
@@ -47,14 +41,15 @@ void Functions<Real,DefaultDevice>
     if (!(nucleationPossible(i) || hydrometeorsPresent(i))) {
       return;
     }
+    auto workspace = workspace_mgr.get_workspace(team);
+
     // Ice sedimentation:  (adaptive substepping)
     ice_sedimentation(
       ekat::subview(rho, i), ekat::subview(inv_rho, i), ekat::subview(rhofaci, i), ekat::subview(cld_frac_i, i), 
-      ekat::subview(inv_dz, i), team, nk, ktop, kbot, kdir, dt, inv_dt, 
+      ekat::subview(inv_dz, i), team, workspace, nk, ktop, kbot, kdir, dt, inv_dt, 
       ekat::subview(qi, i), ekat::subview(qi_incld, i), ekat::subview(ni, i), ekat::subview(ni_incld, i),
       ekat::subview(qm, i), ekat::subview(qm_incld, i), ekat::subview(bm, i), ekat::subview(bm_incld, i), ekat::subview(qi_tend, i), ekat::subview(ni_tend, i),
-      ekat::subview(V_qit, i), ekat::subview(V_nit, i), ekat::subview(flux_nit, i), ekat::subview(flux_bir, i), ekat::subview(flux_qir, i), 
-      ekat::subview(flux_qit, i), ice_table_vals, precip_ice_surf(i));
+      ice_table_vals, precip_ice_surf(i));
 
  });
 }
