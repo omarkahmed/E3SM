@@ -3,7 +3,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 #default=${SCRIPT_DIR}/../..
 #REPO_HOME=${REPO_HOME:-${default}}
-E3SM=${SCRIPT_DIR}/E3SM
+E3SM_DIR=E3SM
 
 export http_proxy=http://proxy-dmz.intel.com:912
 
@@ -15,6 +15,7 @@ OMP_THREADS=-1
 HARDWARE=pvc
 MPI_LIB=mpich
 JOB=build
+RUN=01
 export E3SM_HOME=${PWD}
 #export LIBHOME=/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi_2023.2_classic
 #export LIBHOME=/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20230917
@@ -48,6 +49,12 @@ if [[ $1 == '-h' || $1 == '--help' || $1 == '-help' ]]; then
   echo "    -i <input directory>"
   echo "        directory for required input files (default: ${DATA_HOME})"
   echo
+  echo "    -e <E3SM directory name>"
+  echo "        E3SM directory name (default: ${E3SM_DIR})"
+  echo
+  echo "    -r <run number>"
+  echo "        run number suffix (default: ${RUN})"
+  echo
   echo "    -d "
   echo "        Disable gpu (default: off)"
   echo
@@ -56,7 +63,7 @@ if [[ $1 == '-h' || $1 == '--help' || $1 == '-help' ]]; then
 fi
 
 # fetch input arguments, if any
-while getopts "j:c:n:o:m:b:l:i:d" flag
+while getopts "j:c:n:o:m:b:l:i:e:r:d" flag
 do
   case "${flag}" in
     j) export JOB=${OPTARG};;
@@ -67,6 +74,8 @@ do
     b) export E3SM_HOME=${OPTARG};;
     l) export LIBHOME=${OPTARG};;
     i) export DATA_HOME=${OPTARG};;
+    e) export E3SM_DIR=${OPTARG};;
+    r) export RUN=${OPTARG};;
     d) export GPU=0;;
   esac
 done
@@ -75,10 +84,14 @@ done
 #source ${SCRIPT_DIR}/config/${HARDWARE}_${MPI_LIB}.sh
 
 module purge
-#module load cmake intel/oneapi/nightly intel-comp-rt intel/mpi-utils  -f intel/mpich
-module load cmake intel/oneapi intel/dpl intel-nightly/20230615 intel-nightly/dpct/20230615 intel/mkl-nda/xmain-nightly/20230619 intel-comp-rt intel/mpi-utils  -f intel/mpich
+#module load cmake intel/oneapi/nightly intel/dpl intel/mpi-utils  -f intel/mpich
+#module load cmake intel/oneapi intel/dpl intel-nightly/20230615 intel-nightly/dpct/20230615 intel/mkl-nda/xmain-nightly/20230619 intel/mpi-utils  -f intel/mpich
+module load cmake intel/oneapi intel/dpl intel-nightly/20230926 intel-nightly/dpct/20230926 intel/mkl-nda/xmain-nightly intel/mpi-utils  -f intel/mpich
+module load intel-comp-rt
+#module load intel-comp-rt/agama-ci-devel/682.35
+#module load intel-comp-rt/agama-ci-devel/737
 
-#E3SM=${REPO_HOME}
+E3SM=${SCRIPT_DIR}/../${E3SM_DIR}
 RES=ne4pg2_ne4pg2
 MACH=ortce
 COMPSET=F2010-MMF2
@@ -132,34 +145,33 @@ fi
 
 PROJ=cli115
 OUTPUT=${PWD}
-export CASE=${COMPSET}_${MACH}_${HARDWARE}_${MPI_LIB}_${RES}_${COMPILER}_${MPI_RANKS}x${OMP_THREADS}
+export CASE=${E3SM_DIR}_${COMPSET}_${MACH}_${HARDWARE}_${MPI_LIB}_${RES}_${COMPILER}_${MPI_RANKS}x${OMP_THREADS}.${RUN}
 
 if [[ ${JOB} =~ "build" ]]; then
-  newcase_command="${E3SM}/cime/scripts/create_newcase -case ${CASE} -compset ${COMPSET} -res ${RES} -mach ${MACH} -mpilib ${MPI_LIB} -compiler ${COMPILER} -project ${PROJ} --output-root ${OUTPUT} -pecount ${MPI_RANKS}x${OMP_THREADS} --handle-preexisting-dirs r"
-  #ewcase_command="${E3SM}/cime/scripts/create_newcase -case ${CASE} -compset ${COMPSET} -res ${RES} -mach ${MACH} -mpilib ${MPI_LIB} -compiler ${COMPILER} -project ${PROJ} --output-root ${OUTPUT} --handle-preexisting-dirs r"
-  echo "Executing: ${newcase_command}"
-  ${newcase_command}
-  cd $CASE
-  ./xmlchange --append -id CAM_CONFIG_OPTS -val " -crm_dt 10 "
-  ./xmlchange STOP_OPTION=ndays
-  ./xmlchange STOP_N=1
-  ./xmlchange REST_OPTION=never
-  ./xmlchange REST_N=1
-  ./xmlchange RESUBMIT=0
-  ./xmlchange DEBUG=false
-  ./xmlchange JOB_WALLCLOCK_TIME=02:00:00
-  ./xmlchange CONTINUE_RUN=FALSE
+newcase_command="${E3SM}/cime/scripts/create_newcase -case ${CASE} -compset ${COMPSET} -res ${RES} -mach ${MACH} -mpilib ${MPI_LIB} -compiler ${COMPILER} -project ${PROJ} --output-root ${OUTPUT} -pecount ${MPI_RANKS}x${OMP_THREADS} --handle-preexisting-dirs r"
+echo "Executing: ${newcase_command}"
+${newcase_command}
+cd $CASE
+#./xmlchange --append -file env_build.xml -id CAM_CONFIG_OPTS -val " -cppdefs '-D_OPENMP' "
+./xmlchange --append -id CAM_CONFIG_OPTS -val " -crm_dt 10 "
+./xmlchange STOP_OPTION=ndays
+./xmlchange STOP_N=1
+./xmlchange REST_OPTION=never
+./xmlchange REST_N=1
+./xmlchange RESUBMIT=0
+./xmlchange DEBUG=false
+./xmlchange JOB_WALLCLOCK_TIME=02:00:00
+./xmlchange CONTINUE_RUN=FALSE
 
-  #cat > user_nl_eam << 'eof'
-  # dt_tracer_factor=1
-  # transport_alg=0
-  # hypervis_subcycle_q=1
-  #eof
-  
-  ./case.setup
-  ./case.build
+cat > user_nl_eam << 'eof'
+ dt_tracer_factor=1
+ transport_alg=0
+ hypervis_subcycle_q=1
+eof
+./case.setup
+./case.build
 else
-  cd ${CASE}
+cd ${CASE}
 fi
 
 if [[ ${JOB} =~ "run" ]]; then
