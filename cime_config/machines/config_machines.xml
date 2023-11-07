@@ -60,7 +60,7 @@
     <DESC>Intel-ORTCE</DESC>
     <NODENAME_REGEX>sdp10301\d|sdp445\d|sdp5259|sdp12507\d|sdp13522\d|DUT.*|sdp45\d*|sdp46\d*|ortce-*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>oneapi-ifxgpu,oneapi-ifx,oneapi-ifort,oneapi-ifx-cuda,oneapi-ifort-cuda,oneapi-gfortrangpu</COMPILERS>
+    <COMPILERS>oneapi-ifxgpu,oneapi-ifx,oneapi-ifort,oneapi-ifx-cuda,oneapi-ifort-cuda,oneapi-gfortrangpu,oneapi-ifortgpu</COMPILERS>
     <MPILIBS>mpich,impi</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{E3SM_HOME}</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{DATA_HOME}/cesm-inputdata</DIN_LOC_ROOT>
@@ -75,9 +75,12 @@
     <MAX_TASKS_PER_NODE>224</MAX_TASKS_PER_NODE>
     <MAX_TASKS_PER_NODE compiler="oneapi-ifx">224</MAX_TASKS_PER_NODE>
     <MAX_TASKS_PER_NODE compiler="oneapi-ifxgpu">112</MAX_TASKS_PER_NODE>
+    <MAX_TASKS_PER_NODE compiler="oneapi-ifortgpu">112</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>112</MAX_MPITASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE compiler="oneapi-ifx">112</MAX_MPITASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE compiler="oneapi-ifxgpu">2</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-ifort">112</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-ifortgpu">2</MAX_MPITASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE compiler="oneapi-gfortrangpu">2</MAX_MPITASKS_PER_NODE>
     <mpirun mpilib="mpich">
       <executable>mpiexec</executable>
