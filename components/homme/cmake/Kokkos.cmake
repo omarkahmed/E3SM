@@ -5,7 +5,7 @@ set (KOKKOS_INSTALLATION_NEEDED FALSE CACHE BOOL "")
 if (DEFINED E3SM_KOKKOS_PATH)
   message (STATUS "The E3SM installation of kokkos in ${E3SM_KOKKOS_PATH} will be used. Here are the details:")
   set (KOKKOS_INCLUDE_DIR ${E3SM_KOKKOS_PATH}/include)
-  set (KOKKOS_LIBRARY_DIR ${E3SM_KOKKOS_PATH}/lib64)
+  set (KOKKOS_LIBRARY_DIR ${E3SM_KOKKOS_PATH}/lib)
 
   message ("    KOKKOS_INCLUDE_DIR: ${KOKKOS_INCLUDE_DIR}")
   message ("    KOKKOS_LIBRARY_DIR: ${KOKKOS_LIBRARY_DIR}")
