@@ -2959,7 +2959,7 @@
     <DESC>ANL Sunspot Test and Development System (TDS), batch system is pbspro</DESC>
     <NODENAME_REGEX>uan-.*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>oneapi-ifx,oneapi-ifxgpu,gnu</COMPILERS>
+    <COMPILERS>oneapi-ifx,oneapi-ifxgpu,gnu,oneapi-gfortran</COMPILERS>
     <MPILIBS>mpich,impi,openmpi</MPILIBS>
     <CHARGE_ACCOUNT>CSC249ADSE15_CNDA</CHARGE_ACCOUNT>
     <SAVE_TIMING_DIR>/gila/CSC249ADSE15_CNDA/performance_archive</SAVE_TIMING_DIR>
@@ -3014,21 +3014,41 @@
           <command name="load">prepend-deps/default</command>
         </modules>
         <modules compiler="!gnu">
-          <command name="unload">gcc</command>
-          <command name="load">oneapi/eng-compiler/2023.05.15.007</command>
+          <!--command name="unload">gcc</command-->
+		  <!--command name="load">oneapi/eng-compiler/2023.10.15.002</command-->
+		  <command name="load">oneapi/eng-compiler/2023.05.15.007</command>
         </modules>
         <modules compiler="gnu">
            <command name="unload">spack cmake</command>
            <command name="load">gcc/10.3.0</command>
+   </modules>
+         <modules compiler="oneapi-gfortran">
+          <command name="load"></command>
+	  <command name="load">oneapi/eng-compiler/2023.10.15.002</command>
+	  <command name="load">mpich/52.2/gnu-all-pmix-gpu</command>
+          <command name="load">gcc</command>
+          <!--command name="load">mpich/52.2/icc-all-pmix-gpu</command-->
+          <!--command name="load">oneapi/eng-compiler/.2023.05.15.002-rc02</command-->
+          <!--command name="load">oneapi/eng-compiler/.2023.05.15.003-rc08</command-->
+          <!--command name="load">oneapi/eng-compiler/2022.10.15.006</command-->
+          <!--command name="load">mpich/50.2/icc-all-pmix-gpu</command-->
+          <!--command name="load">intel_compute_runtime/release/22.43.24595.30</command-->
         </modules>
      </module_system>
      <RUNDIR>$CIME_OUTPUT_ROOT/$CASE/run</RUNDIR>
      <EXEROOT>$CIME_OUTPUT_ROOT/$CASE/bld</EXEROOT>
-     <environment_variables>
+     <environment_variables compiler="!oneapi-gfortran">
         <env name="NETCDF_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/software/oneAPI.2022.12.30.003/netcdf</env>
         <env name="PNETCDF_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/software/oneAPI.2022.12.30.003/pnetcdf</env>
         <env name="LD_LIBRARY_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/software/oneAPI.2022.12.30.003/netcdf/lib:$ENV{LD_LIBRARY_PATH}</env>
         <env name="PATH">/lus/gila/projects/CSC249ADSE15_CNDA/software/oneAPI.2022.12.30.003/netcdf/bin:$ENV{PATH}</env>
+     </environment_variables>
+     <environment_variables compiler="oneapi-gfortran">
+        <env name="NETCDF_C_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/netcdf</env>
+        <env name="NETCDF_FORTRAN_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/netcdf</env>
+        <env name="NETCDF_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/netcdf</env>
+        <env name="PNETCDF_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/pnetcdf</env>
+        <env name="LD_LIBRARY_PATH">/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/netcdf/lib64:/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/netcdf/lib:/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/pnetcdf/lib64:/lus/gila/projects/CSC249ADSE15_CNDA/omarahmed/libs/icx_gfortran/pnetcdf/lib:$ENV{LD_LIBRARY_PATH}</env>
      </environment_variables>
      <environment_variables mpilib="mpich" DEBUG="TRUE">
         <env name="HYDRA_TOPO_DEBUG">1</env>
@@ -3038,7 +3058,20 @@
         <env name="I_MPI_PIN_DOMAIN">omp</env>
         <env name="I_MPI_PIN_ORDER">spread</env>
         <env name="I_MPI_PIN_CELL">unit</env>
-     </environment_variables>
+</environment_variables>
+     <environment_variables compiler="oneapi-gfortran">
+        <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
+        <env name="ONEAPI_MPICH_GPU">NO_GPU</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="romio_cb_read">disable</env>
+        <env name="romio_cb_write">disable</env>
+        <env name="SYCL_CACHE_PERSISTENT">1</env>
+        <env name="GATOR_INITIAL_MB">4000MB</env>
+        <env name="GATOR_DISABLE">0</env>
+        <env name="GPU_TILE_COMPACT">/soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh</env>
+        <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
+        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+    </environment_variables>
      <environment_variables compiler="oneapi-ifxgpu">
         <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
         <env name="ONEAPI_MPICH_GPU">NO_GPU</env>
