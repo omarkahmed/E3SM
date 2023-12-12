@@ -76,7 +76,7 @@ void pam_debug_check_state( pam::PamCoupler &coupler, int id, int nstep ) {
     const auto is_nan_q_atm = isnan( rhov(k,j,i,iens) );
     if ( is_nan_t_atm || is_nan_r_atm || is_nan_q_atm ) {
       auto phis = input_phis(iens)/grav;
-      printf("PAM-DEBUG nan-found - st:%3.3d id:%2.2d k:%3.3d i:%3.3d n:%3.3d y:%5.1f x:%5.1f ph:%6.1f -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g \n",
+      /*printf("PAM-DEBUG nan-found - st:%3.3d id:%2.2d k:%3.3d i:%3.3d n:%3.3d y:%5.1f x:%5.1f ph:%6.1f -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g \n",
         nstep,id,k,i,iens,lat(iens),lon(iens),phis,
         temp(k,j,i,iens),
         rhod(k,j,i,iens),
@@ -88,7 +88,7 @@ void pam_debug_check_state( pam::PamCoupler &coupler, int id, int nstep ) {
         debug_save_rhov(k,j,i,iens),
         debug_save_rhoc(k,j,i,iens),
         debug_save_rhoi(k,j,i,iens)
-      );
+      );*/
     }
     // Check for negative values
     const auto is_neg_t_atm = temp(k,j,i,iens)<0;
@@ -96,7 +96,7 @@ void pam_debug_check_state( pam::PamCoupler &coupler, int id, int nstep ) {
     const auto is_neg_q_atm = rhov(k,j,i,iens)<0;
     if ( is_neg_t_atm || is_neg_r_atm || is_neg_q_atm ) {
       auto phis = input_phis(iens)/grav;
-      printf("PAM-DEBUG neg-found - st:%3.3d id:%2.2d k:%3.3d i:%3.3d n:%3.3d y:%5.1f x:%5.1f ph:%6.1f -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g \n",
+      /*printf("PAM-DEBUG neg-found - st:%3.3d id:%2.2d k:%3.3d i:%3.3d n:%3.3d y:%5.1f x:%5.1f ph:%6.1f -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g -- t:%8.2g rd:%8.2g rv:%8.2g rc:%8.2g ri:%8.2g \n",
         nstep,id,k,i,iens,lat(iens),lon(iens),phis,
         temp(k,j,i,iens),
         rhod(k,j,i,iens),
@@ -108,7 +108,7 @@ void pam_debug_check_state( pam::PamCoupler &coupler, int id, int nstep ) {
         debug_save_rhov(k,j,i,iens),
         debug_save_rhoc(k,j,i,iens),
         debug_save_rhoi(k,j,i,iens)
-      );
+      );*/
     }
     // update saved previous values
     debug_save_temp(k,j,i,iens) = temp(k,j,i,iens);
@@ -200,12 +200,12 @@ void pam_debug_print_state( pam::PamCoupler &coupler, int id ) {
   parallel_for("pam_debug_print_state", SimpleBounds<2>(nz,nx), YAKL_LAMBDA (int k, int i) {
     int j = 0;
     int n = 0;
-    printf("PAM-DEBUG %d - k:%d  i:%d  temp : %g  rv: %g  rc: %g  ri: %g \n",
+    /*printf("PAM-DEBUG %d - k:%d  i:%d  temp : %g  rv: %g  rc: %g  ri: %g \n",
       id,k,i,
       temp(k,j,i,n),
       rho_v(k,j,i,n),
       rho_c(k,j,i,n),
       rho_i(k,j,i,n)
-    );
+    );*/
   });
 }
