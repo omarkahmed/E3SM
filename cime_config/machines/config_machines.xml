@@ -3013,10 +3013,15 @@
           <command name="load">spack cmake/3.26.3-gcc-11.2.0-vnn7ncx</command>
           <command name="load">prepend-deps/default</command>
         </modules>
-        <modules compiler="!gnu">
-          <!--command name="unload">gcc</command-->
-		  <!--command name="load">oneapi/eng-compiler/2023.10.15.002</command-->
-		  <command name="load">oneapi/eng-compiler/2023.05.15.007</command>
+        <modules compiler="oneapi-ifxgpu">
+		<command name="unload">gcc</command>
+		  <command name="load">oneapi/eng-compiler/2023.10.15.002</command>
+		  <!--command name="load">oneapi/eng-compiler/2023.05.15.007</command-->
+        </modules>
+        <modules compiler="oneapi-ifx">
+                <command name="unload">gcc</command>
+                  <command name="load">oneapi/eng-compiler/2023.10.15.002</command>
+                  <!--command name="load">oneapi/eng-compiler/2023.05.15.007</command-->
         </modules>
         <modules compiler="gnu">
            <command name="unload">spack cmake</command>
@@ -3027,12 +3032,6 @@
 	  <command name="load">oneapi/eng-compiler/2023.10.15.002</command>
 	  <command name="load">mpich/52.2/gnu-all-pmix-gpu</command>
           <command name="load">gcc</command>
-          <!--command name="load">mpich/52.2/icc-all-pmix-gpu</command-->
-          <!--command name="load">oneapi/eng-compiler/.2023.05.15.002-rc02</command-->
-          <!--command name="load">oneapi/eng-compiler/.2023.05.15.003-rc08</command-->
-          <!--command name="load">oneapi/eng-compiler/2022.10.15.006</command-->
-          <!--command name="load">mpich/50.2/icc-all-pmix-gpu</command-->
-          <!--command name="load">intel_compute_runtime/release/22.43.24595.30</command-->
         </modules>
      </module_system>
      <RUNDIR>$CIME_OUTPUT_ROOT/$CASE/run</RUNDIR>
@@ -3083,7 +3082,8 @@
         <env name="GATOR_DISABLE">0</env>
         <env name="GPU_TILE_COMPACT">/soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh</env>
         <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
-        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+	<env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+	<env name="ZES_ENABLE_SYSMAN">1</env>
     </environment_variables>
     <environment_variables compiler="oneapi-ifx">
         <env name="LIBOMPTARGET_DEBUG">0</env><!--default 0, max 5 -->
