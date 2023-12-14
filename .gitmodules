@@ -33,7 +33,7 @@
         url = git@github.com:E3SM-Project/EKAT.git
 [submodule "externals/YAKL"]
 	path = externals/YAKL
-	url = git@github.com:mrnorman/YAKL.git
+	url = git@github.com:omarkahmed/YAKL.git
 [submodule "externals/cub"]
 	path = externals/cub
 	url = git@github.com:NVlabs/cub.git
