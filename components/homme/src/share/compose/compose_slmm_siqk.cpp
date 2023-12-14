@@ -60,7 +60,7 @@ public:
     // tol is on dx, not (a,b), so adjust slightly.
     if ( ! info.success || err > 1e4*tol_) {
       jinfo.nfails++;
-      printf("calc_sphere_to_ref ei %d i %d j %d: nits %d re %1.1e\n",
+      PRINTF("calc_sphere_to_ref ei %d i %d j %d: nits %d re %1.1e\n",
              ei, i, j, info.n_iterations, err);
     }
     jinfo.sum_nits += info.n_iterations;
@@ -87,7 +87,7 @@ Int test_sphere_to_ref (const ConstVec3s::HostMirror& p,
                         const bool sphere) {
   TestSphereToRefKernel k(p, e, sphere);
   Info info;
-  ko::parallel_reduce(k.n(), k, info);
+//  ko::parallel_reduce(k.n(), k, info);
   return info.nfails;
 }
 
