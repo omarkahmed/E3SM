@@ -72,7 +72,7 @@
 	branch = e3sm
 [submodule "components/eam/src/physics/crm/pam/external"]
 	path = components/eam/src/physics/crm/pam/external
-	url = git@github.com:E3SM-Project/PAM.git
+	url = git@github.com:omarkahmed/PAM.git
 [submodule "externals/haero"]
 	path = externals/haero
 	url = git@github.com:eagles-project/haero.git
