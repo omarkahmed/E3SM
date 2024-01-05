@@ -21,8 +21,8 @@ parser = argparse.ArgumentParser('NetCDF Norm Comparison')
 
 parser.add_argument('--source', '-s', type=str, help='Source file for comparison')
 parser.add_argument('--target', '-t', type=str, help='Target file for comparison')
-parser.add_argument('--linf', '-li', type=float, default=10.0, help='Normalized L-infinity tolerance')
-parser.add_argument('--l2', '-l2', type=float, default=5.0, help='Normalized L2 tolerance')
+parser.add_argument('--linf', '-li', type=float, default=1e-10, help='Normalized L-infinity tolerance')
+parser.add_argument('--l2', '-l2', type=float, default=1e-10, help='Normalized L2 tolerance')
 
 arguments = parser.parse_args()
 
@@ -53,8 +53,10 @@ error_msg = f'All variables within relative 2-norm limit of {l2_tol}, and relati
 ################################################################################
 #Loop through all variables
 ################################################################################
+print(nc1.variables.keys())
+
 for v in nc1.variables.keys() :
-  
+
   # Only compare floats
   if (nc2.variables[v].dtype == np.float64 or nc2.variables[v].dtype == np.float32) :
     
@@ -83,7 +85,7 @@ for v in nc1.variables.keys() :
     # if 'rad'   not in v: continue # only compare radiation variables
 
     # skip lines that are all zeros
-    if norm2==0 and normi==0 and avg_abs_err==0 and max_abs_err==0: continue
+    #if norm2==0 and normi==0 and avg_abs_err==0 and max_abs_err==0: continue
 
     # Print to terminal
     print(f'{v:<20}:  {norm2:20.10e}  {normi:20.10e}  {avg_abs_err:20.10e}  {max_abs_err:20.10e}')
