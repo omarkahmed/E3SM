@@ -109,12 +109,12 @@ cd $CASE
 ./xmlchange --append -id CAM_CONFIG_OPTS -val " -crm_dt 10 "
 ./xmlchange STOP_OPTION=ndays
 ./xmlchange STOP_N=1
-./xmlchange REST_OPTION=never
-./xmlchange REST_N=1
-./xmlchange RESUBMIT=0
-./xmlchange DEBUG=false
-./xmlchange JOB_WALLCLOCK_TIME=02:00:00
-./xmlchange CONTINUE_RUN=FALSE
+#./xmlchange REST_OPTION=never
+#./xmlchange REST_N=1
+#./xmlchange RESUBMIT=0
+#./xmlchange DEBUG=false
+#./xmlchange JOB_WALLCLOCK_TIME=02:00:00
+#./xmlchange CONTINUE_RUN=FALSE
 
 cat > user_nl_eam << 'eof'
  dt_tracer_factor=1
