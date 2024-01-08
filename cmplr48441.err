@@ -1,0 +1,39 @@
+OpenMP ifx issues:
+
+Some instructions to reproduce the OpenMP ifx issues on Sunspot PVCs:
+
+1.  Expected to complete: ./build_run_e3sm.sh -c pvc -n 12 -o 1
+2.  Expected to fail: ./build_run_e3sm.sh -c pvc -n 12 -o 2
+3.  Expected to complete: ./build_run_e3sm.sh -c spr -n 104 -o 1
+4.  Expected to complete: ./build_run_e3sm.sh -c spr -n 104 -o 2
+
+Case 2 will segfault with the following dump:
+
+Library Image PC Routine Line Source 
+libifcore.so.5 000015521F8CC7D2 for_write_int_fmt Unknown Unknown 
+libifcore.so.5 000015521F8CB37E for_write_int_fmt Unknown Unknown 
+e3sm.exe 0000000002553372 i4tostring 74 shr_strconvert_mod.F90 
+e3sm.exe 00000000024E89CD shr_log_errmsg 78 shr_log_mod.F90 
+e3sm.exe 0000000001337F92 setfilters 239 filterMod.F90 
+e3sm.exe 00000000013ED24D reweight_wrapup 53 reweightMod.F90 
+e3sm.exe 00000000012AB85C elm_initializemod 399 elm_initializeMod.F90 
+libiomp5.so 0000155216B9E493 __kmp_invoke_micr Unknown Unknown 
+libiomp5.so 0000155216B0C533 Unknown Unknown Unknown 
+libiomp5.so 0000155216B0D7B8 __kmp_fork_call Unknown Unknown 
+libiomp5.so 0000155216AC4D23 __kmpc_fork_call Unknown Unknown 
+e3sm.exe 00000000012A7485 initialize1 396 elm_initializeMod.F90 
+e3sm.exe 0000000001281F43 lnd_init_mct 250 lnd_comp_mct.F90 
+e3sm.exe 0000000000441E20 component_init_cc 257 component_mod.F90 
+e3sm.exe 0000000000426D74 cime_init 1453 cime_comp_mod.F90 
+e3sm.exe 0000000000440DC4 cime_driver 122 cime_driver.F90
+
+The error occurs in the following OpenMP loop E3SM/components/elm/src/main/elm_initializeMod.F90:396
+
+    nclumps = get_proc_clumps()
+    !$OMP PARALLEL DO PRIVATE (nc, bounds_clump)
+    do nc = 1, nclumps
+       call get_clump_bounds(nc, bounds_clump)
+       call reweight_wrapup(bounds_clump, &
+            ldomain%glcmask(bounds_clump%begg:bounds_clump%endg)*1._r8)
+    end do
+    !$OMP END PARALLEL DO
