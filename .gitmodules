@@ -26,14 +26,14 @@
 	branch = CESM_v2.1.4
 [submodule "cime"]
 	path = cime
-	url = git@github.com:ESMCI/cime.git
-	branch = master
+	url = git@github.com:omarkahmed/cime.git
+	branch = omarkahmed/gordonbell2024-debug
 [submodule "externals/ekat"]
         path = externals/ekat
         url = git@github.com:E3SM-Project/EKAT.git
 [submodule "externals/YAKL"]
 	path = externals/YAKL
-	url = git@github.com:mrnorman/YAKL.git
+	url = git@github.com:omarkahmed/YAKL.git
 [submodule "externals/cub"]
 	path = externals/cub
 	url = git@github.com:NVlabs/cub.git
