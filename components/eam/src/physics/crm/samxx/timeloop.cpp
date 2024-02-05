@@ -14,6 +14,9 @@ void timeloop() {
 
   nstep = 0;
 
+  use_ESMT = false;
+  docoriolis = false;
+
   do {
     nstep = nstep + 1;
 
@@ -111,28 +114,29 @@ void timeloop() {
       //-----------------------------------------------
       //       advection of momentum:
       advect_mom();
-
+      
       //----------------------------------------------------------
       //  SGS effects on momentum:
       if (dosgs) { 
         sgs_mom();
       }
-
+      
       //----------------------------------------------------------
       //  Explicit scalar momentum transport scheme (ESMT)
       if (use_ESMT) {
         scalar_momentum_tend();
       }
-
+      
       //-----------------------------------------------------------
       //       Coriolis force:
       if (docoriolis) {
         coriolis();
       }
-
+      
       //---------------------------------------------------------
       //       compute rhs of the Poisson equation and solve it for pressure.
       pressure();
+      
 
       //---------------------------------------------------------
       //       find velocity field at n+1/2 timestep needed for advection of scalars:
@@ -141,11 +145,11 @@ void timeloop() {
 
       //----------------------------------------------------------
       //     Update boundaries for all prognostic scalar fields for advection:
-      boundaries(2);
+      //boundaries(2);
 
       //---------------------------------------------------------
       //      advection of scalars :
-      advect_all_scalars();
+      //advect_all_scalars();
 
       //-----------------------------------------------------------
       //    Convert velocity back from nondimensional form:
