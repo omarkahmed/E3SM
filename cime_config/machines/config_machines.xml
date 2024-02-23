@@ -3125,6 +3125,7 @@
         <modules compiler="!gnu">
           <!--command name="load">oneapi/eng-compiler/2023.10.15.002</command-->
           <command name="load">oneapi/eng-compiler/2023.12.15.002</command>
+          <command name="load">tools/xpu-smi</command>
         </modules>
         <modules compiler="gnu">
            <command name="unload">spack-pe-gcc cmake</command>
@@ -3158,7 +3159,7 @@
         <env name="SYCL_CACHE_PERSISTENT">1</env>
         <env name="GATOR_INITIAL_MB">4000MB</env>
         <env name="GATOR_DISABLE">0</env>
-        <env name="GPU_TILE_COMPACT">/soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh</env>
+        <env name="GPU_TILE_COMPACT">/lus/gecko/projects/CSC249ADSE15_CNDA/omarahmed/tools/xpu-smi/gpu_tile_compact.sh</env>
         <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
