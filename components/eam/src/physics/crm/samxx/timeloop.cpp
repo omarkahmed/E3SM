@@ -15,6 +15,7 @@ void timeloop() {
   nstep = 0;
 
   do {
+    printf("SAMXX nstep %i, nstop %i\n", nstep, nstop);
     nstep = nstep + 1;
 
     //------------------------------------------------------------------
@@ -24,6 +25,7 @@ void timeloop() {
     kurant();
 
     for(int icyc=1; icyc<=ncycle; icyc++) {
+      printf("SAMXX icyc %i, ncycle %i\n", icyc, ncycle);
       icycle = icyc;
       dtn = dt/ncycle;
       parallel_for( 1 , YAKL_LAMBDA ( int i ) {
