@@ -112,6 +112,7 @@ subroutine phys_register
   !---------------------------------------------------------------------------
   !---------------------------------------------------------------------------
 
+  write(*,*) "Started phys_register"
   call phys_getopts(do_aerocom_ind3_out         = do_aerocom_ind3,  &
                     state_debug_checks_out      = state_debug_checks, &
                     micro_do_icesupersat_out    = micro_do_icesupersat, &
@@ -201,7 +202,7 @@ subroutine phys_register
   call cnst_chk_dim()
 
   ! ***NOTE*** No registering constituents after the call to cnst_chk_dim.
-
+  write(*,*) "Completed phys_register"
 end subroutine phys_register
 
 !===================================================================================================
@@ -237,6 +238,7 @@ subroutine phys_inidat( cam_out, pbuf2d )
   integer :: ierr
   integer :: ixcldice, ixcldliq
   integer :: grid_id  ! grid ID for data mapping
+  write(*,*) "Started phys_inidata"
   !---------------------------------------------------------------------------
   !---------------------------------------------------------------------------
   nullify(tptr,tptr3d,tptr3d_2,cldptr,convptr_3d)
@@ -493,7 +495,7 @@ subroutine phys_inidat( cam_out, pbuf2d )
   deallocate (tptr3d)
 
   call initialize_short_lived_species(fh_ini, pbuf2d)
-
+  write(*,*) "Completed phys_inidata"
 end subroutine phys_inidat
 
 !===================================================================================================
@@ -567,6 +569,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
   !-----------------------------------------------------------------------------
   !-----------------------------------------------------------------------------
 
+  write(*,*) "Started phys_init"
   call physics_type_alloc(phys_state, phys_tend, begchunk, endchunk, pcols)
 
   do lchnk = begchunk, endchunk
@@ -690,7 +693,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
 
   !disable additional diagn for crm
   call check_energy_set_print_additional_diagn(.false.)
-
+  write(*,*) "Completed phys_inidata"
 end subroutine phys_init
 
 !===================================================================================================
@@ -755,6 +758,7 @@ subroutine phys_run1(phys_state, ztodt, phys_tend, pbuf2d,  cam_in, cam_out)
   real(r8), pointer, dimension(:,:) :: cldo ! old cloud fraction
   !-----------------------------------------------------------------------------
   !-----------------------------------------------------------------------------
+  write(*,*) "Started phys_run1"
   zero = 0._r8
   nstep = get_nstep()
 
@@ -889,6 +893,7 @@ subroutine phys_run1(phys_state, ztodt, phys_tend, pbuf2d,  cam_in, cam_out)
 #ifdef TRACER_CHECK
   call gmean_mass ('between DRY', phys_state)
 #endif
+  write(*,*) "Completed phys_run1"
 
 end subroutine phys_run1
 
@@ -930,7 +935,7 @@ subroutine phys_run2(phys_state, ztodt, phys_tend, pbuf2d, cam_out, cam_in )
   integer(i8) :: beg_count, end_count, irtc_rate ! for measuring chunk cost
   real(r8):: chunk_cost
   type(physics_buffer_desc),pointer, dimension(:)     :: phys_buffer_chunk
-
+  write(*,*) "Started phys_run2"
   call t_barrierf('sync_ac_physics', mpicom)
   call t_startf ('ac_physics')
 
@@ -985,6 +990,7 @@ subroutine phys_run2(phys_state, ztodt, phys_tend, pbuf2d, cam_out, cam_in )
 
   call pbuf_update_tim_idx()
   call diag_deallocate()
+  write(*,*) "Completed phys_run2"
 
 end subroutine phys_run2
 
@@ -1006,7 +1012,7 @@ subroutine phys_final( phys_state, phys_tend, pbuf2d )
   type(physics_buffer_desc), pointer :: pbuf2d(:,:)
   !---------------------------------------------------------------------------
   !---------------------------------------------------------------------------
-
+  write(*,*) "Started phys_final"
   if(associated(pbuf2d)) then
      call pbuf_deallocate(pbuf2d,'global')
      deallocate(pbuf2d)
@@ -1033,6 +1039,7 @@ subroutine phys_final( phys_state, phys_tend, pbuf2d )
   call t_startf ('print_cost_p')
   call print_cost_p
   call t_stopf ('print_cost_p')
+  write(*,*) "Completed phys_final"
 
 end subroutine phys_final
 
@@ -1074,6 +1081,7 @@ subroutine tphysac (ztodt, cam_in, sgh, sgh30, cam_out, state, tend, pbuf, fsds 
   use co2_cycle,          only: co2_cycle_set_ptend
 
   implicit none
+
   !-----------------------------------------------------------------------------
   ! Arguments
   !-----------------------------------------------------------------------------
@@ -1117,6 +1125,7 @@ subroutine tphysac (ztodt, cam_in, sgh, sgh30, cam_out, state, tend, pbuf, fsds 
   logical  :: l_tracer_aero, l_vdiff, l_rayleigh, l_gw_drag
   !-----------------------------------------------------------------------------
   !-----------------------------------------------------------------------------
+    write(*,*) "Started tphysac"
   lchnk = state%lchnk
   ncol  = state%ncol
   nstep = get_nstep()
@@ -1302,6 +1311,8 @@ subroutine tphysac (ztodt, cam_in, sgh, sgh30, cam_out, state, tend, pbuf, fsds 
   !-----------------------------------------------------------------------------
   call check_tracers_fini(tracerint)
 
+  write(*,*) "Completed tphysac"
+
 end subroutine tphysac
 
 !===================================================================================================
@@ -1337,6 +1348,7 @@ subroutine tphysbc1(ztodt, fsns, fsnt, flns, flnt, &
   use cloud_diagnostics,      only: cloud_diagnostics_calc
 
   implicit none
+
   !-----------------------------------------------------------------------------
   ! Interface Arguments
   !-----------------------------------------------------------------------------
@@ -1393,7 +1405,7 @@ subroutine tphysbc1(ztodt, fsns, fsnt, flns, flnt, &
   real(r8) :: CIDiff(pcols)            ! Difference in vertically integrated static energy
 
   logical :: l_bc_energy_fix, l_dry_adj
-
+  write(*,*) "Started tphysbc1"
   call phys_getopts( l_bc_energy_fix_out    = l_bc_energy_fix    &
                     ,l_dry_adj_out          = l_dry_adj          )
   
@@ -1585,6 +1597,8 @@ subroutine tphysbc1(ztodt, fsns, fsnt, flns, flnt, &
                          cam_in%shf(:), zero, zero, cam_in%cflx(:,1)) 
 #endif
 
+  write(*,*) "Completed tphysbc1"
+
 end subroutine tphysbc1
 
 !===================================================================================================
@@ -1703,6 +1717,7 @@ subroutine tphysbc2(ztodt, fsns, fsnt, flns, flnt, &
   !-----------------------------------------------------------------------------
   ! Initialize stuff
   !-----------------------------------------------------------------------------
+    write(*,*) "Started tphysbc2"
   call t_startf('bc_init')
 
   zero = 0._r8
@@ -1885,7 +1900,7 @@ subroutine tphysbc2(ztodt, fsns, fsnt, flns, flnt, &
   call check_tracers_fini(tracerint)
 
   call t_stopf('tphysbc_diagnostics')
-
+  write(*,*) "Completed tphysbc2"
   !-----------------------------------------------------------------------------
   !-----------------------------------------------------------------------------
 end subroutine tphysbc2
@@ -1924,7 +1939,7 @@ subroutine phys_timestep_init(phys_state, cam_out, pbuf2d)
 
   type(physics_buffer_desc), pointer                 :: pbuf2d(:,:)
   !-----------------------------------------------------------------------------
-
+  write(*,*) "Started phys_timestep_init"
   ! Chemistry surface values
   call chem_surfvals_set()
 
@@ -1961,7 +1976,7 @@ subroutine phys_timestep_init(phys_state, cam_out, pbuf2d)
 
   ! age of air tracers
   call aoa_tracers_timestep_init(phys_state)
-
+  write(*,*) "Completed phys_timestep_init"
 end subroutine phys_timestep_init
 
 !===================================================================================================
