@@ -237,10 +237,10 @@
       <env name="PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018/bin:$ENV{PATH}</env>
       <env name="LD_LIBRARY_PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018/lib:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
-     <environment_variables SMP_PRESENT="TRUE" compiler="!gnu"> 
+     <!--environment_variables SMP_PRESENT="TRUE" compiler="!gnu"> 
       <env name="KMP_AFFINITY">verbose,granularity=thread,balanced</env>
       <env name="OMP_STACKSIZE">128M</env>
-    </environment_variables>
+    </environment_variables-->
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
