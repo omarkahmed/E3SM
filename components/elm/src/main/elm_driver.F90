@@ -667,7 +667,7 @@ contains
     ! snow accumulation exceeds 10 mm.
     ! ============================================================================
 
-    !$OMP PARALLEL DO PRIVATE (nc,l,c, bounds_clump)
+    !!$OMP PARALLEL DO PRIVATE (nc,l,c, bounds_clump)
     do nc = 1,nclumps
        call get_clump_bounds(nc, bounds_clump)
 
@@ -1393,7 +1393,7 @@ contains
        end if
 
     end do
-    !$OMP END PARALLEL DO
+    !!$OMP END PARALLEL DO
 
     ! Pass fates seed dispersal information to all nodes
     if (use_fates) then

@@ -797,7 +797,7 @@ subroutine phys_run1(phys_state, ztodt, phys_tend, pbuf2d,  cam_in, cam_out)
   call t_startf ('bc_physics')
   call t_startf ('bc_physics1')
 
-!$OMP PARALLEL DO PRIVATE (C, beg_count, phys_buffer_chunk, end_count, chunk_cost)
+!!$OMP PARALLEL DO PRIVATE (C, beg_count, phys_buffer_chunk, end_count, chunk_cost)
   do c=begchunk, endchunk
 
     beg_count = shr_sys_irtc(irtc_rate)
@@ -858,7 +858,7 @@ subroutine phys_run1(phys_state, ztodt, phys_tend, pbuf2d,  cam_in, cam_out)
     ncol_sum = ncol_sum + phys_state(c)%ncol
   end do
 
-!$OMP PARALLEL DO PRIVATE (C, beg_count, phys_buffer_chunk, end_count, chunk_cost)
+!!$OMP PARALLEL DO PRIVATE (C, beg_count, phys_buffer_chunk, end_count, chunk_cost)
   do c=begchunk, endchunk
 
     beg_count = shr_sys_irtc(irtc_rate)
@@ -953,7 +953,7 @@ subroutine phys_run2(phys_state, ztodt, phys_tend, pbuf2d, cam_out, cam_in )
   !-----------------------------------------------------------------------------
   if(ieflx_opt>0) call ieflx_gmean(phys_state, phys_tend, pbuf2d, cam_in, cam_out, nstep)
 
-!$OMP PARALLEL DO PRIVATE (C, beg_count, NCOL, phys_buffer_chunk, end_count, chunk_cost)
+!!$OMP PARALLEL DO PRIVATE (C, beg_count, NCOL, phys_buffer_chunk, end_count, chunk_cost)
   do c=begchunk,endchunk
 
     beg_count = shr_sys_irtc(irtc_rate)

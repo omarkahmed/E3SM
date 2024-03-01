@@ -360,11 +360,11 @@ CONTAINS
 #ifdef HORIZ_OPENMP
        !if (iam==0) write (iulog,*) "dyn_run: hthreads=",hthreads,&
        !                            "max_threads=",omp_get_max_threads()
-       !$OMP PARALLEL NUM_THREADS(hthreads), DEFAULT(SHARED), PRIVATE(ithr,nets,nete,hybrid,n)
+       !!$OMP PARALLEL NUM_THREADS(hthreads), DEFAULT(SHARED), PRIVATE(ithr,nets,nete,hybrid,n)
 #endif
 #ifdef COLUMN_OPENMP
        ! nested threads
-       call omp_set_num_threads(vthreads)
+       !call omp_set_num_threads(vthreads)
 #endif
        ithr=omp_get_thread_num()
        nets=dom_mt(ithr)%start
@@ -409,7 +409,7 @@ CONTAINS
        endif
 
 #ifdef HORIZ_OPENMP
-       !$OMP END PARALLEL
+       !!$OMP END PARALLEL
 #endif
     end if
     rc = DYN_RUN_SUCCESS
