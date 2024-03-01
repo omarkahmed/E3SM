@@ -574,19 +574,31 @@ CONTAINS
        endif
 
        ! Run CAM (run2, run3, run4)
+
+       write(*,*) "Started cam_run2"
        
        call t_startf ('CAM_run2')
        call cam_run2( cam_out, cam_in )
        call t_stopf  ('CAM_run2')
 
+        write(*,*) "Finished cam_run2"
+
+       write(*,*) "Started cam_run3"
+
        call t_startf ('CAM_run3')
        call cam_run3( cam_out )
        call t_stopf  ('CAM_run3')
+
+        write(*,*) "Finished cam_run3"
+
+       write(*,*) "Started cam_run4"
        
        call t_startf ('CAM_run4')
        call cam_run4( cam_out, cam_in, rstwr, nlend, &
             yr_spec=yr_sync, mon_spec=mon_sync, day_spec=day_sync, sec_spec=tod_sync)
        call t_stopf  ('CAM_run4')
+
+        write(*,*) "Finished cam_run4"
        
        ! Advance cam time step 
        
@@ -595,10 +607,14 @@ CONTAINS
        call t_stopf  ('CAM_adv_timestep')
        
        ! Run cam radiation/clouds (run1)
+
+       write(*,*) "Started cam_run1 (radiation/clouds)"
           
        call t_startf ('CAM_run1')
        call cam_run1 ( cam_in, cam_out ) 
        call t_stopf  ('CAM_run1')
+
+      write(*,*) "Finished cam_run1 (radiation/clouds)"
        
        ! Map output from cam to mct data structures
        
