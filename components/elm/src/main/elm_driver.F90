@@ -320,7 +320,7 @@ contains
     ! the associated filter updates, too (otherwise we get a carbon balance error)
     ! ==================================================================================
 
-    !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
+    !!$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
     do nc = 1,nclumps
        call get_clump_bounds(nc, bounds_clump)
 
@@ -347,13 +347,13 @@ contains
        end if
        call t_stopf("decomp_vert")
     end do
-    !$OMP END PARALLEL DO
+    !!$OMP END PARALLEL DO
 
     ! ============================================================================
     ! Zero fluxes for transient land cover
     ! ============================================================================
 
-    !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
+    !!$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
     do nc = 1,nclumps
        call get_clump_bounds(nc, bounds_clump)
 
@@ -444,7 +444,7 @@ contains
 
 
     end do
-    !$OMP END PARALLEL DO
+    !!$OMP END PARALLEL DO
 
     ! ============================================================================
     ! Update subgrid weights with dynamic landcover (prescribed transient patches,
@@ -471,7 +471,7 @@ contains
        else
           call t_startf('cnbalchk_at_grid')
 
-          !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
+          !!$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
           do nc = 1,nclumps
              call get_clump_bounds(nc, bounds_clump)
 
@@ -519,7 +519,7 @@ contains
                   col_ps, grc_ps, grc_pf)
 
           end do
-          !$OMP END PARALLEL DO
+          !!$OMP END PARALLEL DO
           call t_stopf('cnbalchk_at_grid')
 
        end if
@@ -541,7 +541,7 @@ contains
     ! changes due to dynamic area adjustments can break column-level conservation
     ! ============================================================================
 
-    !$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
+    !!$OMP PARALLEL DO PRIVATE (nc,bounds_clump)
     do nc = 1,nclumps
        call get_clump_bounds(nc, bounds_clump)
 
@@ -607,7 +607,7 @@ contains
        endif
 
     end do
-    !$OMP END PARALLEL DO
+    !!$OMP END PARALLEL DO
 
 
 
