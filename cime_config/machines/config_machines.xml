@@ -56,6 +56,197 @@
 
   -->
 
+  <machine MACH="ortce4ccs">
+    <DESC>Intel-ORTCE</DESC>
+    <NODENAME_REGEX>sdp10301\d|sdp445\d|sdp5259|sdp12507\d|sdp13522\d|DUT.*|sdp45\d*|sdp46\d*|ortce-*</NODENAME_REGEX>
+    <OS>LINUX</OS>
+    <COMPILERS>oneapi-ifxgpu,oneapi-ifx,oneapi-ifort,oneapi-ifx-cuda,oneapi-ifort-cuda,oneapi-gfortrangpu,oneapi-ifortgpu</COMPILERS>
+    <MPILIBS>mpich,impi</MPILIBS>
+    <CIME_OUTPUT_ROOT>$ENV{E3SM_HOME}</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{DATA_HOME}/cesm-inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$ENV{DATA_HOME}/ptclm-data</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$ENV{E3SM_HOME}/$CASE</DOUT_S_ROOT>
+    <CCSM_CPRNC>$CCSMROOT/tools/cprnc/build/cprnc</CCSM_CPRNC>
+    <GMAKE>make</GMAKE>
+    <GMAKE_J>32</GMAKE_J>
+    <TESTS>e3sm_developer</TESTS>
+    <BATCH_SYSTEM>none</BATCH_SYSTEM>
+    <SUPPORTED_BY>omar dot ahmed at intel dot com</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>224</MAX_TASKS_PER_NODE>
+    <MAX_TASKS_PER_NODE compiler="oneapi-ifx">224</MAX_TASKS_PER_NODE>
+    <MAX_TASKS_PER_NODE compiler="oneapi-ifxgpu">448</MAX_TASKS_PER_NODE>
+    <MAX_TASKS_PER_NODE compiler="oneapi-ifortgpu">112</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>112</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-ifx">112</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-ifxgpu">4</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-ifort">112</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-ifortgpu">2</MAX_MPITASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE compiler="oneapi-gfortrangpu">2</MAX_MPITASKS_PER_NODE>
+    <mpirun mpilib="mpich">
+      <executable>mpiexec</executable>
+       <!--executable>numactl -m 2-3 mpiexec</executable--><!--for HBM runs-->
+       <arguments>
+          <arg name="total_num_tasks">-np {{ total_tasks }}</arg>
+          <arg name="ranks_per_node">-ppn {{ tasks_per_node }}</arg>
+          <!--arg name="ranks_bind">cpu-bind $ENV{RANKS_BIND} -envall</a-->
+          <!--arg name="threads_per_rank">-d $ENV{OMP_NUM_THREADS}</arg-->
+          <!--arg name="gpu_maps">$ENV{GPU_TILE_COMPACT}</arg-->
+          <arg name="gpu_maps">/opt/hpc_software/libraries/intel/mpi-utils/spread_flat.sh</arg>
+       </arguments>
+    </mpirun>
+    <mpirun mpilib="impi">
+      <executable>mpirun</executable>
+      <arguments>
+        <arg name="num_tasks">-l -n {{ total_tasks }} -bind-to core </arg>
+      </arguments>
+    </mpirun>
+    <module_system type="none" />
+    <!--module_system type="module" allow_error="true">
+       <init_path lang="csh">/usr/share/modules/init/csh</init_path>
+       <init_path lang="sh">/usr/share/modules/init/sh</init_path>
+       <init_path lang="bash">/usr/share/modules/init/bash</init_path>
+       <init_path lang="python">/usr/share/modules/init/python.py</init_path>
+       <init_path lang="perl">/usr/share/modules/init/perl.pm</init_path>
+       <cmd_path lang="sh">module</cmd_path>
+       <cmd_path lang="csh">module</cmd_path>
+       <cmd_path lang="bash">module</cmd_path>
+       <modules>
+          <command name="purge"></command>
+          <command name="load">cmake</command>
+          <command name="load">intel/oneapi/nightly</command>
+          <command name="load">intel-comp-rt</command>
+          <command name="load">intel/mpi-utils</command>
+        </modules>
+        <modules mpilib="mpich">
+          <command name="load"> -f intel/mpich</command>
+        </modules>
+      </module_system-->
+      <environment_variables mpilib="impi">
+        <!--env name="I_MPI_PIN_DOMAIN">omp</env-->
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_FABRICS">shm</env>
+        <env name="I_MPI_DEBUG">10</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">4</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
+      </environment_variables>
+     <environment_variables compiler="oneapi-ifxgpu">
+        <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="romio_cb_read">disable</env>
+        <env name="romio_cb_write">disable</env>
+        <env name="SYCL_CACHE_PERSISTENT">1</env>
+        <env name="GATOR_INITIAL_MB">4000MB</env>
+        <env name="GATOR_DISABLE">0</env>
+        <env name="GPU_TILE_COMPACT">/opt/hpc_software/libraries/intel/mpi-utils/spread_flat_4ccs.sh</env>
+        <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
+        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
+        <env name="ZEX_NUMBER_OF_CCS">0:4,1:4,2:4,3:4,4:4,5:4,6:4,7:4</env>
+      </environment_variables>
+      <environment_variables compiler="oneapi-ifortgpu">
+        <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="romio_cb_read">disable</env>
+        <env name="romio_cb_write">disable</env>
+        <env name="SYCL_CACHE_PERSISTENT">1</env>
+        <env name="GATOR_INITIAL_MB">4000MB</env>
+        <env name="GATOR_DISABLE">0</env>
+        <env name="GPU_TILE_COMPACT">/opt/hpc_software/libraries/intel/mpi-utils/spread.sh</env>
+        <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
+        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
+      </environment_variables>
+      <environment_variables compiler="oneapi-gfortrangpu">
+        <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="romio_cb_read">disable</env>
+        <env name="romio_cb_write">disable</env>
+        <env name="SYCL_CACHE_PERSISTENT">1</env>
+        <env name="GATOR_INITIAL_MB">4000MB</env>
+        <env name="GATOR_DISABLE">0</env>
+        <env name="GPU_TILE_COMPACT">/soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh</env>
+        <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
+        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+    </environment_variables>
+    <environment_variables compiler="oneapi-ifx">
+        <env name="LIBOMPTARGET_DEBUG">0</env><!--default 0, max 5 -->
+        <env name="OMP_TARGET_OFFLOAD">DISABLED</env><!--default OMP_TARGET_OFFLOAD=MANDATORY-->
+        <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
+        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="GPU_TILE_COMPACT"> </env>
+      </environment_variables>
+    <environment_variables compiler="oneapi-ifort">
+        <env name="LIBOMPTARGET_DEBUG">0</env><!--default 0, max 5 -->
+        <env name="OMP_TARGET_OFFLOAD">DISABLED</env><!--default OMP_TARGET_OFFLOAD=MANDATORY-->
+        <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
+        <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="GPU_TILE_COMPACT"> </env>
+      </environment_variables>
+    <environment_variables compiler="oneapi-ifx">
+      <env name="E3SM_SRCROOT">$SRCROOT</env>
+      <env name="NETCDF_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="NETCDF_C_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="NETCDF_FORTRAN_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="PNETCDF_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="HDF5_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018/lib:$ENV{LD_LIBRARY_PATH}</env>
+    </environment_variables>
+    <environment_variables compiler="oneapi-ifxgpu">
+      <env name="E3SM_SRCROOT">$SRCROOT</env>
+      <env name="NETCDF_PATH">$ENV{LIBHOME}</env>
+      <env name="NETCDF_C_PATH">$ENV{LIBHOME}</env>
+      <env name="NETCDF_FORTRAN_PATH">$ENV{LIBHOME}</env>
+      <env name="PNETCDF_PATH">$ENV{LIBHOME}</env>
+      <env name="HDF5_PATH">$ENV{LIBHOME}</env>
+      <env name="PATH">$ENV{LIBHOME}/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">$ENV{LIBHOME}/lib:$ENV{LD_LIBRARY_PATH}</env>
+    </environment_variables>
+    <environment_variables compiler="oneapi-ifort">
+      <env name="E3SM_SRCROOT">$SRCROOT</env>
+      <env name="NETCDF_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="NETCDF_C_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="NETCDF_FORTRAN_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="PNETCDF_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="HDF5_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018/lib:$ENV{LD_LIBRARY_PATH}</env>
+    </environment_variables>
+    <environment_variables compiler="oneapi-ifortgpu">
+      <env name="E3SM_SRCROOT">$SRCROOT</env>
+      <env name="NETCDF_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="NETCDF_C_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="NETCDF_FORTRAN_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="PNETCDF_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="HDF5_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018</env>
+      <env name="PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">/nfs/site/home/omarahme/git-repos/applications.hpc.workloads.e3sm.pam/libs/oneapi-pnetcdf-ifort_mpich/20231018/lib:$ENV{LD_LIBRARY_PATH}</env>
+    </environment_variables>
+    <environment_variables compiler="oneapi-gfortrangpu">
+      <env name="E3SM_SRCROOT">$SRCROOT</env>
+      <env name="NETCDF_PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018</env>
+      <env name="NETCDF_C_PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018</env>
+      <env name="NETCDF_FORTRAN_PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018</env>
+      <env name="PNETCDF_PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018</env>
+      <env name="PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">/hpc-wl-automation/e3sm/libs/ubuntu-22.04/oneapi-gfortran_mpich/20231018/lib:$ENV{LD_LIBRARY_PATH}</env>
+    </environment_variables>
+     <environment_variables SMP_PRESENT="TRUE" compiler="!gnu">
+      <env name="KMP_AFFINITY">verbose,granularity=thread,balanced</env>
+      <env name="OMP_STACKSIZE">128M</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
+  </machine>
+
+  
   <machine MACH="ortce">
     <DESC>Intel-ORTCE</DESC>
     <NODENAME_REGEX>sdp10301\d|sdp445\d|sdp5259|sdp12507\d|sdp13522\d|DUT.*|sdp45\d*|sdp46\d*|ortce-*</NODENAME_REGEX>
