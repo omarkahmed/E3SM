@@ -130,11 +130,11 @@
         <env name="SYCL_CACHE_PERSISTENT">1</env>
         <env name="GATOR_INITIAL_MB">4000MB</env>
         <env name="GATOR_DISABLE">0</env>
-        <env name="GPU_TILE_COMPACT">/home/omarahme/mpi-utils/spread_flat_4ccs.sh</env>
+        <env name="GPU_TILE_COMPACT">/home/omarahme/mpi-utils/spread_flat_1ccs.sh</env>
         <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
-        <env name="ZEX_NUMBER_OF_CCS">0:4,1:4,2:4,3:4,4:4,5:4,6:4,7:4</env>
+        <env name="ZEX_NUMBER_OF_CCS">0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1</env>
         <env name="CALRUN"> </env>
       </environment_variables>
       <environment_variables compiler="oneapi-ifxgpu-4ccs">
