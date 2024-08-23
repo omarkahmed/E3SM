@@ -135,6 +135,10 @@
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="ZEX_NUMBER_OF_CCS">0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
         <env name="CALRUN"> </env>
       </environment_variables>
       <environment_variables compiler="oneapi-ifxgpu-4ccs">
@@ -150,6 +154,11 @@
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="ZEX_NUMBER_OF_CCS">0:4,1:4,2:4,3:4,4:4,5:4,6:4,7:4</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
         <env name="CALRUN"> </env>
       </environment_variables>
       <environment_variables compiler="oneapi-ifxgpu-4ccs-cal">
@@ -164,6 +173,11 @@
         <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
         <env name="ZEX_NUMBER_OF_CCS">0:4,1:4,2:4,3:4,4:4,5:4,6:4,7:4</env>
         <env name="CALRUN">calrun</env>
       </environment_variables>
@@ -178,6 +192,11 @@
         <env name="GPU_TILE_COMPACT">/home/omarahme/mpi-utils/spread_flat.sh</env>
         <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="CALRUN"> </env>
       </environment_variables>
@@ -192,6 +211,11 @@
         <env name="GPU_TILE_COMPACT">/home/omarahme/mpi-utils/spread_flat.sh</env>
         <env name="FI_CXI_DEFAULT_CQ_SIZE">131072</env>
         <env name="FI_CXI_CQ_FILL_PERCENT">20</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
         <env name="CALRUN"> </env>
     </environment_variables>
     <environment_variables compiler="oneapi-ifx">
@@ -242,8 +266,8 @@
     <COMPILERS>oneapi-ifxgpu,oneapi-ifxgpu-4ccs,oneapi-ifxgpu-4ccs-cal,oneapi-ifx,oneapi-ifort,oneapi-gfortrangpu,oneapi-ifortgpu,gnugpu</COMPILERS>
     <MPILIBS>mpich,impi,openmpi</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{E3SM_HOME}</CIME_OUTPUT_ROOT>
-    <DIN_LOC_ROOT>$ENV{DATA_HOME}/cesm-inputdata</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>$ENV{DATA_HOME}/ptclm-data</DIN_LOC_ROOT_CLMFORC>
+    <DIN_LOC_ROOT>/hpc-wl-automation/e3sm/mmf/input/cesm-inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/hpc-wl-automation/e3sm/mmf/input/ptclm-data</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$ENV{E3SM_HOME}/$CASE</DOUT_S_ROOT>
     <CCSM_CPRNC>$CCSMROOT/tools/cprnc/build/cprnc</CCSM_CPRNC>
     <GMAKE>make</GMAKE>
