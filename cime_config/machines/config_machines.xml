@@ -316,16 +316,16 @@
         <!--env name="I_MPI_PIN_ORDER">spread</env-->
         <env name="I_MPI_FABRICS">shm</env>
         <env name="I_MPI_DEBUG">10</env>
+      </environment_variables>
+     <environment_variables compiler="oneapi-ifxgpu">
+        <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
         <env name="I_MPI_OFFLOAD_CELL">tile</env>
         <!--env name="I_MPI_PIN_ORDER">spread</env-->
         <env name="I_MPI_OFFLOAD">1</env>
         <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
         <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
         <env name="ZES_ENABLE_SYSMAN">1</env>
-      </environment_variables>
-     <environment_variables compiler="oneapi-ifxgpu">
-        <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
-        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
         <env name="romio_cb_read">disable</env>
         <env name="romio_cb_write">disable</env>
         <env name="SYCL_CACHE_PERSISTENT">1</env>
@@ -341,6 +341,12 @@
       <environment_variables compiler="oneapi-ifxgpu-4ccs">
         <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
         <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="romio_cb_read">disable</env>
         <env name="romio_cb_write">disable</env>
         <env name="SYCL_CACHE_PERSISTENT">1</env>
@@ -355,7 +361,13 @@
       </environment_variables>
       <environment_variables compiler="oneapi-ifxgpu-4ccs-cal">
         <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
-        <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="MPIR_CVAR_ENABLE_GPU">0</env>        
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="romio_cb_read">disable</env>
         <env name="romio_cb_write">disable</env>
         <env name="SYCL_CACHE_PERSISTENT">1</env>
@@ -371,6 +383,12 @@
       <environment_variables compiler="oneapi-ifortgpu">
         <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
         <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="romio_cb_read">disable</env>
         <env name="romio_cb_write">disable</env>
         <env name="SYCL_CACHE_PERSISTENT">1</env>
@@ -385,6 +403,12 @@
       <environment_variables compiler="oneapi-gfortrangpu">
         <env name="ONEAPI_DEVICE_SELECTOR">level_zero:gpu</env>
         <env name="MPIR_CVAR_ENABLE_GPU">0</env>
+        <env name="I_MPI_OFFLOAD_CELL">tile</env>
+        <!--env name="I_MPI_PIN_ORDER">spread</env-->
+        <env name="I_MPI_OFFLOAD">1</env>
+        <env name="I_MPI_OFFLOAD_DOMAIN_SIZE">1</env>
+        <env name="I_MPI_OFFLOAD_TOPOLIB">level_zero</env>
+        <env name="ZES_ENABLE_SYSMAN">1</env>
         <env name="romio_cb_read">disable</env>
         <env name="romio_cb_write">disable</env>
         <env name="SYCL_CACHE_PERSISTENT">1</env>
