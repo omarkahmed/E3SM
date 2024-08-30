@@ -460,7 +460,8 @@
     <mpirun mpilib="openmpi">
       <executable>mpirun</executable>
       <arguments>
-        <arg name="num_tasks"> -n {{ total_tasks }} -bind-to core --oversubscribe </arg>
+	 <arg name="num_tasks"> -n {{ total_tasks }} -bind-to core --oversubscribe </arg>
+	 <arg name="gpu_maps">$ENV{GPU_TILE_COMPACT}</arg>
       </arguments>
     </mpirun>
     <module_system type="none" />
@@ -567,8 +568,8 @@
         <env name="CALRUN"> </env>
       </environment_variables>
       <environment_variables compiler="gnugpu">
-        <env name="GPU_TILE_COMPACT"> </env>
-        <env name="CALRUN"> </env>
+        <env name="GPU_TILE_COMPACT">/home/omarahme/git-repos/e3sm/applications.hpc.workloads.e3sm.mmf/scripts/gpu_bind/nvidia/spread.sh</env>
+	<env name="CALRUN"> </env>
       </environment_variables>
     <environment_variables>
       <env name="E3SM_SRCROOT">$SRCROOT</env>
@@ -579,7 +580,7 @@
       <env name="PNETCDF_PATH">$ENV{LIBHOME}</env>
       <env name="HDF5_PATH">$ENV{LIBHOME}</env>
       <env name="PATH">$ENV{LIBHOME}/bin:$ENV{PATH}</env>
-      <env name="LD_LIBRARY_PATH">$ENV{LIBHOME}/lib:$ENV{LD_LIBRARY_PATH}</env>
+      <env name="LD_LIBRARY_PATH">$ENV{LIBHOME}/lib:$ENV{LIBHOME}/lib64:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
      <environment_variables SMP_PRESENT="TRUE" compiler="!gnu">
       <env name="KMP_AFFINITY">verbose,granularity=thread,balanced</env>
